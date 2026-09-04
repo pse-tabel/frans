@@ -318,14 +318,25 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
 .unitkop span{font-family:var(--fm); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
   color:var(--muted2); white-space:nowrap}
 .knoopwrap{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:5px}
-.knoop{width:62px; height:62px; border-radius:50%; border:2px solid var(--line2); background:var(--surface);
+/* Donker = nog niet gedaan (maar wel aantikbaar). Op kleur = echte voortgang. */
+.knoop{width:62px; height:62px; border-radius:50%; border:2px solid var(--line); background:var(--ink2);
   color:var(--muted2); cursor:pointer; display:grid; place-items:center; font-family:var(--fd);
   font-weight:700; font-size:17px; transition:.2s var(--sp); font-variant-numeric:tabular-nums}
-.knoop.open{border-color:var(--c); color:var(--c);
+.knoop:hover{border-color:color-mix(in srgb,var(--c) 55%,transparent);
+  color:color-mix(in srgb,var(--c) 80%,var(--muted)); transform:translateY(-2px)}
+.knoop.nu{border-color:var(--c); color:var(--c); background:var(--surface);
   box-shadow:0 0 28px -9px var(--c), 0 5px 0 -1px color-mix(in srgb,var(--c) 22%,transparent)}
-.knoop.open:hover{transform:translateY(-2px)}
 .knoop.klaar{background:var(--c); border-color:var(--c); color:var(--ink)}
-.knoop.slot{opacity:.4; cursor:default}
+.knoop.klaar:hover{color:var(--ink)}
+.startvraag{position:relative; z-index:2; align-self:stretch; display:flex; align-items:center; gap:9px;
+  padding:11px 13px; border-radius:12px; animation:vin .25s var(--sp) both;
+  border:1px solid color-mix(in srgb,var(--zin) 45%,transparent);
+  background:color-mix(in srgb,var(--zin) 11%,var(--ink2))}
+.startvraag span{flex:1; min-width:0; font-size:12.5px; line-height:1.4; color:var(--text)}
+.startvraag button{flex:none; font-family:var(--fu); font-size:12px; font-weight:700;
+  border-radius:9px; padding:9px 12px; cursor:pointer}
+.startvraag .ja{color:var(--ink); background:var(--zin); border:0}
+.startvraag .nee{color:var(--muted); background:transparent; border:1px solid var(--line)}
 .knoop.poort{width:78px; height:58px; border-radius:16px; font-size:11px; letter-spacing:.1em}
 .kroontjes{display:flex; gap:3px}
 .kroontjes i{width:5px; height:5px; border-radius:50%; background:var(--line2)}
@@ -578,7 +589,7 @@ var NIVEAUS=[]; SETS.forEach(function(s){if(NIVEAUS.indexOf(s.hoofdstuk)<0)NIVEA
 var KEY="motamot-v1";
 function def(){return {v:2,mode:"parcours",richting:"fr",accent:"soepel",sel:null,soort:{voc:1,gram:1,werkw:1},
   niveau:null,prog:{},best:null,
-  pad:{kronen:{},poorten:{},xp:0,reeks:0,laatste:null,vandaag:0,start:null}}}
+  pad:{kronen:{},poorten:{},xp:0,reeks:0,laatste:null,vandaag:0,start:null,startLes:null}}}
 var S=def();
 try{var r=JSON.parse(localStorage.getItem(KEY)||"null");
   if(r&&typeof r==="object"){S=Object.assign(def(),r); S.soort=Object.assign(def().soort,r.soort||{});
@@ -1292,29 +1303,37 @@ function bouwPad(){
   });
   return PAD;
 }
-/* Vanaf welk leerjaar begint het pad? Alles daarvóór blijft vrij te oefenen. */
-function startNr(){
-  var i=-1;
-  bouwPad().forEach(function(u,n){if(u.naam===S.pad.start)i=n});
+var VLAK=null;
+function vlak(){
+  if(VLAK)return VLAK;
+  VLAK=[];
+  bouwPad().forEach(function(u){
+    u.lessen.forEach(function(l){VLAK.push(l)});
+    VLAK.push(u.poort);
+  });
+  return VLAK;
+}
+/* Vanaf welke les begint het pad? Alles daarvóór blijft vrij te oefenen. */
+function startPos(){
+  var lijst=vlak(), i=-1;
+  if(S.pad.startLes)lijst.forEach(function(e,n){if(e.id===S.pad.startLes)i=n});
+  else if(S.pad.start)lijst.forEach(function(e,n){    /* oude instelling per leerjaar */
+    if(i<0&&e.unit.naam===S.pad.start)i=n;
+  });
   return i<0?0:i;
 }
-function vlak(){
-  var uit=[];
-  bouwPad().slice(startNr()).forEach(function(u){
-    u.lessen.forEach(function(l){uit.push(l)});
-    uit.push(u.poort);
-  });
-  return uit;
+function unitBereik(u){
+  var lijst=vlak();
+  return [lijst.indexOf(u.lessen[0]), lijst.indexOf(u.poort)];
 }
 function kronen(id){return S.pad.kronen[id]||0}
 function afgerond(e){return e.type==="poort"?!!S.pad.poorten[e.unit.naam]:kronen(e.id)>0}
-function open(e){
-  var u=e.unit, vroeger=false;
-  bouwPad().forEach(function(x,n){if(x===u&&n<startNr())vroeger=true});
-  if(vroeger)return true;              /* eerder leerjaar: altijd vrij */
-  var lijst=vlak(), i=lijst.indexOf(e);
-  if(i<=0)return true;
-  return afgerond(lijst[i-1]);
+/* Waar sta je nu? De eerste nog niet afgeronde stap vanaf je startpunt.
+   Alleen die krijgt de gloed; al het andere blijft donker tot je het echt gedaan hebt. */
+function huidigeStap(){
+  var lijst=vlak(), sp=startPos();
+  for(var i=sp;i<lijst.length;i++){if(!afgerond(lijst[i]))return lijst[i]}
+  return null;
 }
 function kaartVan(st,i){
   return {sid:st.id,titel:st.titel,soort:st.soort,fr:st.items[i][0],nl:st.items[i][1]};
@@ -1331,8 +1350,10 @@ function tekenPad(){
   var body=$("#padBody"); body.innerHTML="";
   $("#glow").style.setProperty("--c","var(--zin)");
   var p=S.pad, vd=(p.laatste===vandaagStr())?(p.vandaag||0):0;
-  var totaal=0, gedaan=0;
-  vlak().forEach(function(e){if(e.type==="les"){totaal++; if(afgerond(e))gedaan++}});
+  var totaal=0, gedaan=0, sp=startPos();
+  vlak().forEach(function(e,i){
+    if(e.type==="les"&&i>=sp){totaal++; if(afgerond(e))gedaan++}
+  });
 
   var kop=el("div","padkop");
   [[p.reeks||0,"dagen op rij"],[p.xp||0,"totaal xp"],[gedaan+"/"+totaal,"lessen af"]]
@@ -1354,44 +1375,55 @@ function tekenPad(){
 
   var startblok=el("div","doel");
   var slbl=el("div","lbl");
+  var startE=vlak()[sp];
   slbl.appendChild(el("span",null,"Beginnen vanaf"));
-  slbl.appendChild(el("b",null,bouwPad()[startNr()].naam.replace(/\s*\(.*$/,"")));
+  slbl.appendChild(el("b",null, startE.unit.naam.replace(/\s*\(.*$/,"")+
+    (startE.type==="poort" ? " · poort"
+      : sp>unitBereik(startE.unit)[0] ? " · les "+(sp-unitBereik(startE.unit)[0]+1) : "")));
   startblok.appendChild(slbl);
   var srij=el("div","chips");
-  bouwPad().forEach(function(u,i){
+  bouwPad().forEach(function(u){
+    var br=unitBereik(u);
     var b=el("button","chip",u.naam.replace(/\s*\(.*$/,"").replace("middelbaar","mid.").replace("leerjaar","lj."));
     b.type="button"; b.style.setProperty("--cc","var(--zin)");
-    b.setAttribute("aria-pressed",String(i===startNr()));
-    b.addEventListener("click",function(){S.pad.start=u.naam; save(); tekenPad()});
+    b.setAttribute("aria-pressed",String(sp>=br[0]&&sp<=br[1]));
+    b.addEventListener("click",function(){
+      S.pad.startLes=u.lessen[0].id; S.pad.start=null; save(); tekenPad();
+    });
     srij.appendChild(b);
   });
   startblok.appendChild(srij);
+  startblok.appendChild(el("p","note",
+    "Of tik verderop op een les of een poort die op slot staat — je kunt overal instappen."));
   body.appendChild(startblok);
 
   var tip=el("p","padtip",""); tip.id="padTip"; body.appendChild(tip);
 
-  var lijst=el("div","padlijst"); var n=0, eerste=null;
-  bouwPad().forEach(function(u,ui){
+  var lijst=el("div","padlijst"); var n=0, eerste=null, huidig=huidigeStap();
+  bouwPad().forEach(function(u){
     var uk=el("div","unitkop");
     var klaar=u.lessen.filter(afgerond).length;
-    if(ui<startNr())uk.className="unitkop vroeger";
+    var vrijUnit=unitBereik(u)[1]<sp;
+    if(vrijUnit)uk.className="unitkop vroeger";
     uk.appendChild(el("b",null,u.naam.replace(/\s*\(.*$/,"")));
-    uk.appendChild(el("span",null, ui<startNr()
+    uk.appendChild(el("span",null, vrijUnit
       ? "vrij te oefenen · "+klaar+" / "+u.lessen.length
       : klaar+" / "+u.lessen.length));
     lijst.appendChild(uk);
     u.lessen.forEach(function(l,i){
       n++;
+      var nr=n;                       /* per knoop vastleggen, n loopt door */
       var wrap=el("div","knoopwrap");
-      wrap.style.transform="translateX("+Math.round(Math.sin(n*0.85)*58)+"px)";
-      var kn=el("button","knoop"); kn.type="button"; kn.textContent=String(n);
+      wrap.style.transform="translateX("+Math.round(Math.sin(nr*0.85)*58)+"px)";
+      var kn=el("button","knoop"); kn.type="button"; kn.textContent=String(nr);
       kn.style.setProperty("--c",kleurVan(l.st.soort));
-      var kr=kronen(l.id), vrij=open(l);
-      kn.className="knoop "+(kr>=3?"klaar":vrij?(kr?"klaar":"open"):"slot");
-      kn.setAttribute("aria-label","Les "+n+": "+l.st.titel+(vrij?"":" (nog op slot)"));
+      var kr=kronen(l.id), isNu=(l===huidig);
+      kn.className="knoop"+(kr?" klaar":isNu?" nu":"");
+      kn.setAttribute("aria-label","Les "+nr+": "+l.st.titel+" · "+
+        (kr?kr+" van de 3 bolletjes":isNu?"nu aan de beurt":"nog niet gedaan"));
       kn.addEventListener("click",function(){
-        if(!vrij){$("#padTip").textContent="Maak eerst de vorige les af."; return}
-        startLes(l);
+        if(kr||isNu){startLes(l); return}
+        vraagStart(l,wrap);
       });
       wrap.appendChild(kn);
       var kroon=el("div","kroontjes"); kroon.style.setProperty("--c",kleurVan(l.st.soort));
@@ -1399,24 +1431,44 @@ function tekenPad(){
       wrap.appendChild(kroon);
       lijst.appendChild(wrap);
       if(l.eerste)lijst.appendChild(el("div","themalabel",l.st.titel.replace(/\s*\(.*$/,"")));
-      if(vrij&&!kr&&!eerste)eerste=kn;
+      if(isNu&&!eerste)eerste=kn;
     });
     var pw=el("div","knoopwrap");
     var pk=el("button","knoop poort"); pk.type="button"; pk.textContent="POORT";
     pk.style.setProperty("--c","var(--ok)");
-    var pvrij=open(u.poort), pklaar=!!S.pad.poorten[u.naam];
-    pk.className="knoop poort "+(pklaar?"klaar":pvrij?"open":"slot");
+    var pklaar=!!S.pad.poorten[u.naam], pnu=(u.poort===huidig);
+    pk.className="knoop poort"+(pklaar?" klaar":pnu?" nu":"");
+    pk.setAttribute("aria-label","Poort van "+u.naam+" · "+
+      (pklaar?"gehaald":pnu?"nu aan de beurt":"nog niet gedaan"));
     pk.addEventListener("click",function(){
-      if(!pvrij){$("#padTip").textContent="Maak eerst alle lessen van dit hoofdstuk af."; return}
-      startLes(u.poort);
+      if(pklaar||pnu){startLes(u.poort); return}
+      vraagStart(u.poort,pw);
     });
     pw.appendChild(pk); lijst.appendChild(pw);
-    if(pvrij&&!pklaar&&!eerste)eerste=pk;
+    if(pnu&&!eerste)eerste=pk;
   });
   body.appendChild(lijst);
   if(eerste)setTimeout(function(){
     try{eerste.scrollIntoView({block:"center"})}catch(e){}
   },60);
+}
+
+/* Op iets dat op slot staat tikken: je mag daar altijd het pad laten beginnen.
+   De vraag verschijnt bij de knoop zelf, niet bovenaan de pagina. */
+function vraagStart(e,anker){
+  var oud=$(".startvraag"); if(oud)oud.remove();
+  var vak=el("div","startvraag");
+  vak.appendChild(el("span",null, e.type==="poort"
+    ? "Meteen de poort maken? Haal je 80%, dan sla je dit hele hoofdstuk over."
+    : "Hier beginnen? Alles ervóór blijft vrij te oefenen."));
+  var ja=el("button","ja","Start hier"); ja.type="button";
+  ja.addEventListener("click",function(){
+    S.pad.startLes=e.id; S.pad.start=null; save(); startLes(e);
+  });
+  var nee=el("button","nee","Nee"); nee.type="button";
+  nee.addEventListener("click",function(){vak.remove()});
+  vak.appendChild(ja); vak.appendChild(nee);
+  anker.parentNode.insertBefore(vak,anker.nextSibling);
 }
 
 var LES={e:null,q:[],i:0,goed:0,eerst:0};
