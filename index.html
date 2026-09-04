@@ -107,14 +107,20 @@ body{background:var(--ink); color:var(--text); font-family:var(--fu); margin:0;
   background:var(--line); border:1px solid var(--line); border-radius:12px}
 .kgroep{background:var(--ink2); padding:9px 13px 5px; font-family:var(--fm); font-size:9.5px;
   letter-spacing:.13em; text-transform:uppercase; color:var(--muted2); position:sticky; top:0; z-index:1}
-.krij{background:var(--ink2); display:flex; align-items:center; gap:11px; padding:11px 13px; cursor:pointer;
-  border:0; width:100%; text-align:left; font-family:var(--fu); color:var(--text)}
-.krij:hover{background:var(--surface)}
+.krij{background:var(--ink2); display:flex; align-items:center; gap:6px; padding-right:10px}
+.kkies{flex:1; min-width:0; display:flex; align-items:center; gap:11px; padding:11px 13px; cursor:pointer;
+  border:0; background:transparent; text-align:left; font-family:var(--fu); color:var(--text)}
+.kkies:hover{background:var(--surface)}
 .kvink{flex:none; width:19px; height:19px; border-radius:6px; border:1.5px solid var(--line2);
   display:grid; place-items:center; transition:.18s var(--sp)}
-.krij[aria-pressed="true"] .kvink{background:var(--c); border-color:var(--c)}
-.krij[aria-pressed="true"] .kvink::after{content:""; width:5px; height:9px; border:solid var(--ink);
+.kkies[aria-pressed="true"] .kvink{background:var(--c); border-color:var(--c)}
+.kkies[aria-pressed="true"] .kvink::after{content:""; width:5px; height:9px; border:solid var(--ink);
   border-width:0 2px 2px 0; transform:rotate(42deg) translate(-1px,-1px)}
+.koefen{flex:none; font-family:var(--fu); font-size:11px; font-weight:700; color:var(--c); cursor:pointer;
+  background:color-mix(in srgb,var(--c) 12%,transparent); border-radius:8px; padding:7px 11px;
+  border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.koefen:hover{background:color-mix(in srgb,var(--c) 20%,transparent)}
+.unitkop.vroeger{opacity:.55; border-style:dashed}
 .kmid{flex:1; min-width:0}
 .kmid b{display:block; font-size:13.5px; font-weight:600; line-height:1.3}
 .kmid span{font-family:var(--fm); font-size:10px; color:var(--muted2)}
@@ -290,6 +296,48 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
 .install .btn{--c:var(--voc); flex:none; padding:10px 15px; font-size:13px}
 .ix{flex:none; width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:transparent;
   color:var(--muted2); font-size:15px; cursor:pointer}
+/* ---------- parcours ---------- */
+.padkop{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.pk{padding:11px 10px; border-radius:12px; border:1px solid var(--line); background:var(--ink2); text-align:center}
+.pk b{display:block; font-family:var(--fd); font-size:21px; font-weight:700; line-height:1.1;
+  font-variant-numeric:tabular-nums}
+.pk span{font-family:var(--fm); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted2)}
+.doel{display:grid; gap:6px}
+.doel .lbl{display:flex; justify-content:space-between; align-items:baseline}
+.doel .lbl span{font-family:var(--fm); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2)}
+.doel .lbl b{font-family:var(--fd); font-size:13px; color:var(--zin)}
+.padtip{margin:0; text-align:center; font-size:12px; color:var(--muted2); min-height:16px}
+.padlijst{position:relative; display:flex; flex-direction:column; align-items:center; gap:15px;
+  padding:8px 0 26px; overflow-y:auto; -webkit-overflow-scrolling:touch}
+.padlijst::before{content:""; position:absolute; left:50%; top:12px; bottom:12px; width:2px;
+  transform:translateX(-50%); background:repeating-linear-gradient(var(--line) 0 5px,transparent 5px 13px)}
+.unitkop{position:relative; z-index:1; align-self:stretch; margin:14px 0 2px; padding:10px 14px;
+  border-radius:12px; background:var(--ink2); border:1px solid var(--line);
+  display:flex; justify-content:space-between; align-items:center; gap:10px}
+.unitkop b{font-family:var(--fd); font-size:14.5px; font-weight:700}
+.unitkop span{font-family:var(--fm); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted2); white-space:nowrap}
+.knoopwrap{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:5px}
+.knoop{width:62px; height:62px; border-radius:50%; border:2px solid var(--line2); background:var(--surface);
+  color:var(--muted2); cursor:pointer; display:grid; place-items:center; font-family:var(--fd);
+  font-weight:700; font-size:17px; transition:.2s var(--sp); font-variant-numeric:tabular-nums}
+.knoop.open{border-color:var(--c); color:var(--c);
+  box-shadow:0 0 28px -9px var(--c), 0 5px 0 -1px color-mix(in srgb,var(--c) 22%,transparent)}
+.knoop.open:hover{transform:translateY(-2px)}
+.knoop.klaar{background:var(--c); border-color:var(--c); color:var(--ink)}
+.knoop.slot{opacity:.4; cursor:default}
+.knoop.poort{width:78px; height:58px; border-radius:16px; font-size:11px; letter-spacing:.1em}
+.kroontjes{display:flex; gap:3px}
+.kroontjes i{width:5px; height:5px; border-radius:50%; background:var(--line2)}
+.kroontjes i.aan{background:var(--c); box-shadow:0 0 8px -1px var(--c)}
+.themalabel{position:relative; z-index:1; font-family:var(--fm); font-size:9.5px; color:var(--muted2);
+  letter-spacing:.06em; text-align:center; max-width:80%; margin-top:4px}
+.leskop{display:flex; align-items:center; gap:11px}
+.leskop .track{flex:1}
+.sluit{flex:none; width:32px; height:32px; border-radius:9px; border:1px solid var(--line);
+  background:transparent; color:var(--muted); font-size:16px; cursor:pointer}
+.leshart{font-family:var(--fm); font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums}
+
 .zintegel{min-height:0; padding:34px 20px 22px}
 .zintegel .woord{font-size:clamp(16px,4.3vw,21px); font-weight:600; line-height:1.35;
   letter-spacing:0; color:var(--text); text-shadow:none; max-width:34ch}
@@ -352,6 +400,7 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Oefenmodus">
+    <button class="tab" role="tab" data-m="parcours" aria-selected="false">Parcours</button>
     <button class="tab" role="tab" data-m="kaarten" aria-selected="true">Kaarten</button>
     <button class="tab" role="tab" data-m="leren" aria-selected="false">Leren</button>
     <button class="tab" role="tab" data-m="schrijven" aria-selected="false">Schrijven</button>
@@ -385,6 +434,11 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
     </div>
     <button class="reset" id="btnReset">Voortgang wissen</button>
   </div>
+
+  <!-- PARCOURS -->
+  <section class="view" id="v-parcours" role="tabpanel" hidden>
+    <div id="padBody"></div>
+  </section>
 
   <!-- KAARTEN -->
   <section class="view in" id="v-kaarten" role="tabpanel">
@@ -522,11 +576,14 @@ var NIVEAUS=[]; SETS.forEach(function(s){if(NIVEAUS.indexOf(s.hoofdstuk)<0)NIVEA
 
 /* ---------- opslag ---------- */
 var KEY="motamot-v1";
-function def(){return {v:1,mode:"kaarten",richting:"fr",accent:"soepel",sel:null,soort:{voc:1,gram:1,werkw:1},
-  niveau:null,prog:{},best:null}}
+function def(){return {v:2,mode:"parcours",richting:"fr",accent:"soepel",sel:null,soort:{voc:1,gram:1,werkw:1},
+  niveau:null,prog:{},best:null,
+  pad:{kronen:{},poorten:{},xp:0,reeks:0,laatste:null,vandaag:0,start:null}}}
 var S=def();
 try{var r=JSON.parse(localStorage.getItem(KEY)||"null");
-  if(r&&typeof r==="object"){S=Object.assign(def(),r); S.soort=Object.assign(def().soort,r.soort||{}); S.prog=r.prog||{}}
+  if(r&&typeof r==="object"){S=Object.assign(def(),r); S.soort=Object.assign(def().soort,r.soort||{});
+    S.prog=r.prog||{}; S.pad=Object.assign(def().pad,r.pad||{});
+    S.pad.kronen=S.pad.kronen||{}; S.pad.poorten=S.pad.poorten||{}}
 }catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
@@ -718,7 +775,7 @@ function tekenKaart(){
 function kaartenLeeg(txt){
   $("#kaartMove").style.display="none";
   var d=el("div","tegel klaar"); d.id="kKlaarBlok"; d.style.setProperty("--c","var(--voc)");
-  d.appendChild(el("h2","Niets te oefenen")); d.appendChild(el("p",null,txt));
+  d.appendChild(el("h2",null,"Niets te oefenen")); d.appendChild(el("p",null,txt));
   var b=el("button","btn pri","Thema's kiezen"); b.type="button";
   b.addEventListener("click",openKiezer); d.appendChild(b);
   $(".kaartwrap").appendChild(d);
@@ -727,7 +784,7 @@ function kaartenKlaar(){
   $("#kaartMove").style.display="none";
   if($("#kKlaarBlok"))return;
   var d=el("div","tegel klaar"); d.id="kKlaarBlok"; d.style.setProperty("--c","var(--ok)");
-  d.appendChild(el("h2","Stapel uit"));
+  d.appendChild(el("h2",null,"Stapel uit"));
   d.appendChild(el("p",null,"Je hebt "+stapel.length+" kaarten gehad. Pak de moeilijke er nog eens uit."));
   var b=el("button","btn pri","Opnieuw schudden"); b.type="button";
   b.addEventListener("click",function(){kaartenStart(false)});
@@ -807,7 +864,7 @@ function lerenStap(){
   if(!L.q.length){body.appendChild(leegBlok());return}
   if(L.i>=L.q.length){
     var d=el("div","tegel klaar"); d.style.setProperty("--c","var(--ok)");
-    d.appendChild(el("h2","Ronde "+L.ronde+" rond"));
+    d.appendChild(el("h2",null,"Ronde "+L.ronde+" rond"));
     d.appendChild(el("p",null,"Wat je fout had, komt terug in de volgende ronde."));
     var b=el("button","btn pri","Volgende ronde"); b.type="button";
     b.addEventListener("click",function(){L.ronde++; lerenStart()});
@@ -835,7 +892,7 @@ function schrijvenStap(){
   if(!W.q.length){body.appendChild(leegBlok());return}
   if(W.i>=W.q.length){
     var d=el("div","tegel klaar"); d.style.setProperty("--c","var(--ok)");
-    d.appendChild(el("h2","Klaar"));
+    d.appendChild(el("h2",null,"Klaar"));
     d.appendChild(el("div","score",W.goed+"/"+W.q.length));
     var b=el("button","btn pri","Opnieuw"); b.type="button";
     b.addEventListener("click",schrijvenStart); d.appendChild(b); body.appendChild(d); return;
@@ -1029,7 +1086,7 @@ function matchKlaar(){
   $("#mBest").textContent=S.best.toFixed(1)+"s";
   var g=$("#mGrid"); g.innerHTML="";
   var d=el("div","tegel klaar"); d.style.gridColumn="1 / -1"; d.style.setProperty("--c","var(--ok)");
-  d.appendChild(el("h2",rec?"Nieuw record":"Alles gekoppeld"));
+  d.appendChild(el("h2",null,rec?"Nieuw record":"Alles gekoppeld"));
   d.appendChild(el("div","score",t.toFixed(1)+"s"));
   var b=el("button","btn pri","Nog een keer"); b.type="button";
   b.addEventListener("click",matchenStart); d.appendChild(b); g.appendChild(d);
@@ -1060,7 +1117,7 @@ function toetsUitslag(){
   var goed=T.ant.filter(function(a){return a.uitslag}).length, n=T.ant.length;
   var pct=Math.round(goed/n*100);
   var d=el("div","tegel klaar"); d.style.setProperty("--c",pct>=70?"var(--ok)":"var(--zin)");
-  d.appendChild(el("h2",pct>=90?"Bijna vlekkeloos":pct>=70?"Goed bezig":"Nog even oefenen"));
+  d.appendChild(el("h2",null,pct>=90?"Bijna vlekkeloos":pct>=70?"Goed bezig":"Nog even oefenen"));
   d.appendChild(el("div","score",goed+"/"+n));
   d.appendChild(el("p",null,pct+"% goed"));
   var fout=T.ant.filter(function(a){return !a.uitslag});
@@ -1133,20 +1190,27 @@ function tekenKiezer(){
     if(st.hoofdstuk!==vorig){vorig=st.hoofdstuk; lijst.appendChild(el("div","kgroep",st.hoofdstuk))}
     var s=0; st.items.forEach(function(it){s+=P({sid:st.id,fr:it[0]}).b});
     var d=Math.round(s/(st.items.length*5)*100);
-    var b=el("button","krij"); b.type="button";
-    b.setAttribute("aria-pressed",String(isGekozen(st.id)));
-    b.style.setProperty("--c",kleurVan(st.soort));
-    b.innerHTML='<span class="kvink"></span><span class="kmid"><b>'+esc(st.titel)+
-      '</b><span>'+SOORTL[st.soort]+' · '+st.items.length+' items</span></span>'+
+    var rij=el("div","krij"); rij.style.setProperty("--c",kleurVan(st.soort));
+    var kies=el("button","kkies"); kies.type="button";
+    kies.setAttribute("aria-pressed",String(isGekozen(st.id)));
+    kies.innerHTML='<span class="kvink"></span><span class="kmid"><b>'+esc(st.titel)+
+      '</b><span>'+SOORTL[st.soort]+' · '+st.items.length+' items · '+d+'% beheerst</span></span>'+
       '<span class="kbalk"><i style="width:'+d+'%"></i></span>';
-    b.addEventListener("click",function(){
+    kies.addEventListener("click",function(){
       if(!S.sel)S.sel=SETS.map(function(x){return x.id});
       var p=S.sel.indexOf(st.id);
       if(p>=0)S.sel.splice(p,1); else S.sel.push(st.id);
-      b.setAttribute("aria-pressed",String(p<0));
+      kies.setAttribute("aria-pressed",String(p<0));
       save(); werkSelbarBij();
     });
-    lijst.appendChild(b);
+    var oef=el("button","koefen","oefen"); oef.type="button";
+    oef.title="Alleen dit thema oefenen met kaarten";
+    oef.addEventListener("click",function(){
+      S.sel=[st.id]; save();
+      $("#kiezer").hidden=true; werkSelbarBij(); zetModus("kaarten");
+    });
+    rij.appendChild(kies); rij.appendChild(oef);
+    lijst.appendChild(rij);
   });
   werkSelbarBij();
 }
@@ -1181,13 +1245,262 @@ $$("#kSoort .chip").forEach(function(b){
   });
 });
 
+/* ---------- PARCOURS: stap voor stap door het hele leerplan ---------- */
+var PER_LES=8, DAGDOEL=30, PAD=null;
+
+/* Hoe zwaar is één woord of uitdrukking? Losse korte woorden zijn het makkelijkst,
+   hele zinnen met leestekens en accenten het zwaarst. */
+function zwaarte(fr){
+  var woorden=fr.trim().split(/\s+/).length;
+  var accent=/[àâçéèêëîïôöùûü]/i.test(fr)?0.6:0;
+  var leesteken=/[?!.,:;]/.test(fr)?0.5:0;
+  var apostrof=/'/.test(fr)?0.3:0;
+  return woorden*2 + fr.length/6 + accent + leesteken + apostrof;
+}
+function setZwaarte(st){
+  if(st._zw==null){
+    var s=0; st.items.forEach(function(p){s+=zwaarte(p[0])});
+    st._zw = s/st.items.length +
+      (st.soort==="gram"?1.5:st.soort==="werkw"?0.6:0);   /* tabellen zijn abstracter */
+  }
+  return st._zw;
+}
+
+function bouwPad(){
+  if(PAD)return PAD;
+  PAD=[];
+  NIVEAUS.forEach(function(h){
+    var lessen=[];
+    /* binnen een leerjaar: eerst de lichtste thema's */
+    SETS.filter(function(s){return s.hoofdstuk===h})
+        .sort(function(a,b){return setZwaarte(a)-setZwaarte(b)})
+        .forEach(function(st){
+      /* binnen een thema: eerst de kortste woorden, hele zinnen achteraan */
+      var volgorde=st.items.map(function(_,i){return i}).sort(function(a,b){
+        return zwaarte(st.items[a][0])-zwaarte(st.items[b][0]);
+      });
+      for(var i=0;i<volgorde.length;i+=PER_LES){
+        lessen.push({type:"les", id:st.id+"#"+Math.floor(i/PER_LES), st:st,
+          idx:volgorde.slice(i,i+PER_LES), eerste:i===0});
+      }
+    });
+    if(lessen.length)PAD.push({naam:h, lessen:lessen});
+  });
+  PAD.forEach(function(u){
+    u.poort={type:"poort", id:"poort:"+u.naam, unit:u};
+    u.lessen.forEach(function(l){l.unit=u});
+  });
+  return PAD;
+}
+/* Vanaf welk leerjaar begint het pad? Alles daarvóór blijft vrij te oefenen. */
+function startNr(){
+  var i=-1;
+  bouwPad().forEach(function(u,n){if(u.naam===S.pad.start)i=n});
+  return i<0?0:i;
+}
+function vlak(){
+  var uit=[];
+  bouwPad().slice(startNr()).forEach(function(u){
+    u.lessen.forEach(function(l){uit.push(l)});
+    uit.push(u.poort);
+  });
+  return uit;
+}
+function kronen(id){return S.pad.kronen[id]||0}
+function afgerond(e){return e.type==="poort"?!!S.pad.poorten[e.unit.naam]:kronen(e.id)>0}
+function open(e){
+  var u=e.unit, vroeger=false;
+  bouwPad().forEach(function(x,n){if(x===u&&n<startNr())vroeger=true});
+  if(vroeger)return true;              /* eerder leerjaar: altijd vrij */
+  var lijst=vlak(), i=lijst.indexOf(e);
+  if(i<=0)return true;
+  return afgerond(lijst[i-1]);
+}
+function kaartVan(st,i){
+  return {sid:st.id,titel:st.titel,soort:st.soort,fr:st.items[i][0],nl:st.items[i][1]};
+}
+function vandaagStr(){var d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function gisterenStr(){var d=new Date(Date.now()-864e5); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function boekXP(n){
+  var p=S.pad, d=vandaagStr();
+  if(p.laatste!==d){p.reeks=(p.laatste===gisterenStr())?(p.reeks||0)+1:1; p.laatste=d; p.vandaag=0}
+  p.xp=(p.xp||0)+n; p.vandaag=(p.vandaag||0)+n; save();
+}
+
+function tekenPad(){
+  var body=$("#padBody"); body.innerHTML="";
+  $("#glow").style.setProperty("--c","var(--zin)");
+  var p=S.pad, vd=(p.laatste===vandaagStr())?(p.vandaag||0):0;
+  var totaal=0, gedaan=0;
+  vlak().forEach(function(e){if(e.type==="les"){totaal++; if(afgerond(e))gedaan++}});
+
+  var kop=el("div","padkop");
+  [[p.reeks||0,"dagen op rij"],[p.xp||0,"totaal xp"],[gedaan+"/"+totaal,"lessen af"]]
+    .forEach(function(x,i){
+      var c=el("div","pk"); var b=el("b",null,String(x[0]));
+      b.style.color=i===0?"var(--werkw)":i===1?"var(--zin)":"var(--ok)";
+      c.appendChild(b); c.appendChild(el("span",null,x[1])); kop.appendChild(c);
+    });
+  body.appendChild(kop);
+
+  var doel=el("div","doel");
+  var lbl=el("div","lbl");
+  lbl.appendChild(el("span",null,"Dagdoel"));
+  lbl.appendChild(el("b",null,Math.min(vd,DAGDOEL)+" / "+DAGDOEL+" xp"));
+  var tr=el("div","track"); tr.style.setProperty("--c","var(--zin)");
+  var ba=el("div","bar"); ba.style.width=Math.min(100,vd/DAGDOEL*100)+"%";
+  tr.appendChild(ba); doel.appendChild(lbl); doel.appendChild(tr);
+  body.appendChild(doel);
+
+  var startblok=el("div","doel");
+  var slbl=el("div","lbl");
+  slbl.appendChild(el("span",null,"Beginnen vanaf"));
+  slbl.appendChild(el("b",null,bouwPad()[startNr()].naam.replace(/\s*\(.*$/,"")));
+  startblok.appendChild(slbl);
+  var srij=el("div","chips");
+  bouwPad().forEach(function(u,i){
+    var b=el("button","chip",u.naam.replace(/\s*\(.*$/,"").replace("middelbaar","mid.").replace("leerjaar","lj."));
+    b.type="button"; b.style.setProperty("--cc","var(--zin)");
+    b.setAttribute("aria-pressed",String(i===startNr()));
+    b.addEventListener("click",function(){S.pad.start=u.naam; save(); tekenPad()});
+    srij.appendChild(b);
+  });
+  startblok.appendChild(srij);
+  body.appendChild(startblok);
+
+  var tip=el("p","padtip",""); tip.id="padTip"; body.appendChild(tip);
+
+  var lijst=el("div","padlijst"); var n=0, eerste=null;
+  bouwPad().forEach(function(u,ui){
+    var uk=el("div","unitkop");
+    var klaar=u.lessen.filter(afgerond).length;
+    if(ui<startNr())uk.className="unitkop vroeger";
+    uk.appendChild(el("b",null,u.naam.replace(/\s*\(.*$/,"")));
+    uk.appendChild(el("span",null, ui<startNr()
+      ? "vrij te oefenen · "+klaar+" / "+u.lessen.length
+      : klaar+" / "+u.lessen.length));
+    lijst.appendChild(uk);
+    u.lessen.forEach(function(l,i){
+      n++;
+      var wrap=el("div","knoopwrap");
+      wrap.style.transform="translateX("+Math.round(Math.sin(n*0.85)*58)+"px)";
+      var kn=el("button","knoop"); kn.type="button"; kn.textContent=String(n);
+      kn.style.setProperty("--c",kleurVan(l.st.soort));
+      var kr=kronen(l.id), vrij=open(l);
+      kn.className="knoop "+(kr>=3?"klaar":vrij?(kr?"klaar":"open"):"slot");
+      kn.setAttribute("aria-label","Les "+n+": "+l.st.titel+(vrij?"":" (nog op slot)"));
+      kn.addEventListener("click",function(){
+        if(!vrij){$("#padTip").textContent="Maak eerst de vorige les af."; return}
+        startLes(l);
+      });
+      wrap.appendChild(kn);
+      var kroon=el("div","kroontjes"); kroon.style.setProperty("--c",kleurVan(l.st.soort));
+      for(var c=0;c<3;c++){var d=el("i"); if(c<kr)d.className="aan"; kroon.appendChild(d)}
+      wrap.appendChild(kroon);
+      lijst.appendChild(wrap);
+      if(l.eerste)lijst.appendChild(el("div","themalabel",l.st.titel.replace(/\s*\(.*$/,"")));
+      if(vrij&&!kr&&!eerste)eerste=kn;
+    });
+    var pw=el("div","knoopwrap");
+    var pk=el("button","knoop poort"); pk.type="button"; pk.textContent="POORT";
+    pk.style.setProperty("--c","var(--ok)");
+    var pvrij=open(u.poort), pklaar=!!S.pad.poorten[u.naam];
+    pk.className="knoop poort "+(pklaar?"klaar":pvrij?"open":"slot");
+    pk.addEventListener("click",function(){
+      if(!pvrij){$("#padTip").textContent="Maak eerst alle lessen van dit hoofdstuk af."; return}
+      startLes(u.poort);
+    });
+    pw.appendChild(pk); lijst.appendChild(pw);
+    if(pvrij&&!pklaar&&!eerste)eerste=pk;
+  });
+  body.appendChild(lijst);
+  if(eerste)setTimeout(function(){
+    try{eerste.scrollIntoView({block:"center"})}catch(e){}
+  },60);
+}
+
+var LES={e:null,q:[],i:0,goed:0,eerst:0};
+function startLes(e){
+  var items=[];
+  if(e.type==="poort"){
+    var alles=[];
+    e.unit.lessen.forEach(function(l){
+      l.idx.forEach(function(i){alles.push(kaartVan(l.st,i))});
+    });
+    items=shuffle(alles).slice(0,15);
+  } else {
+    e.idx.forEach(function(i){items.push(kaartVan(e.st,i))});
+  }
+  var kr=e.type==="poort"?2:kronen(e.id);
+  LES.e=e; LES.goed=0; LES.i=0; LES.eerst=items.length;
+  LES.q=shuffle(items).map(function(k){
+    return {k:k,
+      d: kr===0?"fr" : kr===1?"nl" : (Math.random()<.5?"fr":"nl"),
+      type: kr===0?"mc" : kr===1?"type" : (Math.random()<.5?"mc":"type")};
+  });
+  tekenLes();
+}
+function tekenLes(){
+  var body=$("#padBody"); body.innerHTML="";
+  var e=LES.e;
+  var kop=el("div","leskop");
+  var sluit=el("button","sluit","×"); sluit.type="button";
+  sluit.setAttribute("aria-label","Les verlaten");
+  sluit.addEventListener("click",function(){LES.e=null; tekenPad()});
+  var tr=el("div","track"); var ba=el("div","bar");
+  ba.style.width=(LES.i/LES.q.length*100)+"%";
+  ba.style.setProperty("--c",e.type==="poort"?"var(--ok)":kleurVan(e.st.soort));
+  tr.appendChild(ba);
+  kop.appendChild(sluit); kop.appendChild(tr);
+  kop.appendChild(el("span","leshart",Math.min(LES.i+1,LES.q.length)+" / "+LES.q.length));
+  body.appendChild(kop);
+
+  if(LES.i>=LES.q.length){lesKlaar(body); return}
+  var q=LES.q[LES.i];
+  body.appendChild(maakVraag(q,{direct:true,klaar:function(uitslag){
+    merk(q.k,uitslag===1);
+    if(uitslag===1&&LES.i<LES.eerst)LES.goed++;
+    /* fout woord komt één keer terug — anders wordt een les eindeloos */
+    if(uitslag!==1&&e.type!=="poort"&&!q.herkans)
+      LES.q.push({k:q.k,d:q.d,type:"mc",herkans:true});
+    LES.i++; tekenLes();
+  }}));
+}
+function lesKlaar(body){
+  var e=LES.e, d=el("div","tegel klaar");
+  if(e.type==="poort"){
+    var pct=Math.round(LES.goed/LES.eerst*100), gehaald=pct>=80;
+    d.style.setProperty("--c",gehaald?"var(--ok)":"var(--werkw)");
+    d.appendChild(el("h2",null,gehaald?"Poort open":"Nog niet"));
+    d.appendChild(el("div","score",pct+"%"));
+    d.appendChild(el("p",null,gehaald?"Je mag door naar het volgende hoofdstuk."
+      :"Je hebt 80% nodig. Oefen de lessen van dit hoofdstuk nog eens en probeer opnieuw."));
+    if(gehaald&&!S.pad.poorten[e.unit.naam]){S.pad.poorten[e.unit.naam]=true; boekXP(30); save()}
+  } else {
+    var was=kronen(e.id), nu=Math.min(3,was+1);
+    S.pad.kronen[e.id]=nu; boekXP(10); save();
+    d.style.setProperty("--c",kleurVan(e.st.soort));
+    d.appendChild(el("h2",null,nu>=3?"Les volledig af":"Les af"));
+    d.appendChild(el("div","score","+10 xp"));
+    d.appendChild(el("p",null, nu>=3
+      ? "Deze les heeft alle drie de bolletjes. Mooi."
+      : (nu===1?"Doe hem nog eens, dan moet je de woorden zelf intypen."
+               :"Nog één keer en deze les is volledig af.")));
+  }
+  var terug=el("button","btn pri","Terug naar het pad"); terug.type="button";
+  terug.addEventListener("click",function(){LES.e=null; tekenPad()});
+  d.appendChild(terug);
+  body.appendChild(d);
+}
+
 /* ---------- modus ---------- */
-var START={kaarten:function(){kaartenStart(false)},leren:lerenStart,schrijven:schrijvenStart,
+var START={parcours:function(){LES.e=null; tekenPad()},
+  kaarten:function(){kaartenStart(false)},leren:lerenStart,schrijven:schrijvenStart,
   zinsbouw:zinsbouwStart,vervoegen:vervoegenStart,matchen:matchenStart,toets:toetsStart,
   voortgang:tekenVoortgang};
 function leegBlok(){
   var d=el("div","tegel klaar"); d.style.setProperty("--c","var(--voc)");
-  d.appendChild(el("h2","Niets te oefenen"));
+  d.appendChild(el("h2",null,"Niets te oefenen"));
   d.appendChild(el("p",null,"Er zitten geen items in je huidige selectie."));
   var b=el("button","btn pri","Thema's kiezen"); b.type="button";
   b.addEventListener("click",openKiezer); d.appendChild(b);
@@ -1198,6 +1511,8 @@ function zetModus(m){
   $$(".tab").forEach(function(b){b.setAttribute("aria-selected",String(b.dataset.m===m))});
   $$(".view").forEach(function(v){v.hidden=(v.id!=="v-"+m)});
   var v=$("#v-"+m); v.classList.remove("in"); void v.offsetWidth; v.classList.add("in");
+  /* het parcours loopt door het hele leerplan, dus de themakeuze hoort daar niet bij */
+  $(".selbar").hidden=(m==="parcours");
   if(m==="kaarten"&&$("#kKlaarBlok"))$("#kKlaarBlok").remove();
   START[m]();
 }
