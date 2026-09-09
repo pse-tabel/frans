@@ -296,6 +296,37 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
 .install .btn{--c:var(--voc); flex:none; padding:10px 15px; font-size:13px}
 .ix{flex:none; width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:transparent;
   color:var(--muted2); font-size:15px; cursor:pointer}
+/* ---------- mijn boek ---------- */
+.mark{border:1px solid color-mix(in srgb,var(--voc) 45%,transparent); cursor:pointer; padding:0}
+.mark:hover{box-shadow:0 0 26px -6px var(--voc); transform:translateY(-1px)}
+#boekLijst{align-content:start}
+.bkaart{display:grid; gap:10px; align-content:start; padding:15px; border-radius:14px;
+  border:1px solid var(--line); background:var(--ink2)}
+.bkop b{display:block; font-family:var(--fd); font-size:17px; font-weight:700; line-height:1.2}
+.bkop span{font-family:var(--fm); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted2)}
+.bmeta{font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+.bmodi{display:flex; flex-wrap:wrap; gap:6px}
+.bmodi button{flex:1 1 auto; min-width:82px; font-family:var(--fu); font-size:12.5px; font-weight:700;
+  padding:10px 8px; border-radius:9px; cursor:pointer; color:var(--ink); background:var(--voc); border:0;
+  transition:transform .16s var(--sp)}
+.bmodi button:active{transform:scale(.97)}
+.bmodi button.zin{background:var(--zin)}
+.bleeg{padding:22px 16px; text-align:center; color:var(--muted2); font-size:13px}
+.mark.tijdelijk{color:var(--zin); border-color:color-mix(in srgb,var(--zin) 50%,transparent);
+  background:linear-gradient(150deg,color-mix(in srgb,var(--zin) 20%,var(--surface)),var(--surface));
+  box-shadow:0 0 22px -7px var(--zin)}
+.btitel{display:flex; align-items:center; flex-wrap:wrap; gap:8px}
+.bdatum{font-family:var(--fm); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--zin); border:1px solid color-mix(in srgb,var(--zin) 45%,transparent);
+  background:color-mix(in srgb,var(--zin) 12%,transparent); border-radius:7px; padding:3px 8px}
+.bnu{font-family:var(--fm); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ok)}
+.bkaart.actief{border-color:color-mix(in srgb,var(--ok) 40%,transparent);
+  background:linear-gradient(155deg,color-mix(in srgb,var(--ok) 7%,var(--ink2)),var(--ink2))}
+.bswitch{font-family:var(--fu); font-size:13px; font-weight:700; padding:12px; border-radius:10px;
+  cursor:pointer; color:var(--ink); background:var(--voc); border:0}
+.bswitch.uit{background:transparent; color:var(--muted2); border:1px solid var(--line); cursor:default}
+
 /* ---------- parcours ---------- */
 .padkop{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
 .pk{padding:11px 10px; border-radius:12px; border:1px solid var(--line); background:var(--ink2); text-align:center}
@@ -402,7 +433,7 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
 
 <div class="app">
   <header class="top">
-    <div class="mark">M</div>
+    <button class="mark" id="btnBoek" aria-label="Mijn boek openen" title="Mijn boek">M</button>
     <div class="tt">
       <h1>Mot à Mot</h1>
       <p id="subkop">Frans · 5e leerjaar → 4de middelbaar</p>
@@ -553,6 +584,16 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
   </div>
 </div>
 
+<!-- MIJN BOEK -->
+<div class="kiezer" id="boek" hidden>
+  <div class="kbox">
+    <div class="kkop"><h2>Wat oefen je?</h2><button class="kklaar" id="boekSluit">Sluiten</button></div>
+    <p class="note">Twee volledige versies van de app, elk met hun eigen parcours, kaarten, zinsbouw
+      en voortgang. Wisselen kan altijd — je verliest niets.</p>
+    <div class="klijst" id="boekLijst" style="background:transparent; border:0; gap:11px; padding:2px"></div>
+  </div>
+</div>
+
 <!-- THEMAKIEZER -->
 <div class="kiezer" id="kiezer" hidden>
   <div class="kbox">
@@ -581,14 +622,16 @@ var DATA = {"sets":[{"id":"persoonlijke-voornaamwoorden","titel":"Persoonlijke v
 "use strict";
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
-var SETS=DATA.sets, ZINNEN=DATA.zinnen;
 var SOORTL={voc:"woordenschat", gram:"grammatica", werkw:"werkwoorden"};
-var NIVEAUS=[]; SETS.forEach(function(s){if(NIVEAUS.indexOf(s.hoofdstuk)<0)NIVEAUS.push(s.hoofdstuk)});
+/* De app draait op één "wereld" tegelijk. Primair = het leerplan, tijdelijk = je
+   eigen boekstof. SETS/ZINNEN/NIVEAUS worden per wereld opnieuw gevuld. */
+var SETS=[], ZINNEN=[], NIVEAUS=[];
 
 /* ---------- opslag ---------- */
 var KEY="motamot-v1";
 function def(){return {v:2,mode:"parcours",richting:"fr",accent:"soepel",sel:null,soort:{voc:1,gram:1,werkw:1},
   niveau:null,prog:{},best:null,
+  wereld:"primair", padden:{}, sels:{},
   pad:{kronen:{},poorten:{},xp:0,reeks:0,laatste:null,vandaag:0,start:null,startLes:null}}}
 var S=def();
 try{var r=JSON.parse(localStorage.getItem(KEY)||"null");
@@ -918,7 +961,11 @@ function schrijvenStap(){
 /* ---------- ZINSBOUW ---------- */
 var Z={lijst:[],i:0};
 function zinnenVoorSelectie(){
-  var hs={}; gekozenSets().forEach(function(s){hs[s.hoofdstuk]=1});
+  var ids={}, hs={};
+  gekozenSets().forEach(function(s){ids[s.id]=1; hs[s.hoofdstuk]=1});
+  /* zinnen die bij het gekozen thema zelf horen gaan voor */
+  var eigen=ZINNEN.filter(function(z){return z.puzzel&&z.set&&ids[z.set]});
+  if(eigen.length>=3)return eigen;
   var uit=ZINNEN.filter(function(z){return z.puzzel&&hs[z.hoofdstuk]});
   return uit.length>=5?uit:ZINNEN.filter(function(z){return z.puzzel});
 }
@@ -1255,6 +1302,152 @@ $$("#kSoort .chip").forEach(function(b){
     save(); tekenKiezer();
   });
 });
+
+/* ---------- MIJN BOEK: hoofdstukken uit het eigen lesboek ---------- */
+var BOEK=[
+ {id:"boek-defi1-corps",
+  titel:"Les parties du corps",
+  groep:"Toets 11/09",
+  bron:"Défi 1 — Mission 1 · p. 35-36",
+  zinnen:[
+    ["Je trouve mon apparence physique très importante.","Ik vind mijn uiterlijk heel belangrijk."],
+    ["Je suis content de mon apparence physique.","Ik ben tevreden met mijn uiterlijk."],
+    ["Je n'ai aucun problème avec une opération.","Ik heb geen enkel probleem met een operatie."],
+    ["Le poids, c'est combien tu pèses.","Het gewicht is hoeveel je weegt."],
+    ["Suivre un régime, c'est manger léger.","Een dieet volgen is licht eten."],
+    ["Épiler, c'est enlever les poils du corps.","Ontharen is de haartjes van het lichaam verwijderen."],
+    ["Improviser, c'est faire quelque chose sans réfléchir.","Improviseren is iets doen zonder na te denken."],
+    ["Quand tu fais du sport, tu vas transpirer.","Als je sport, ga je zweten."]
+  ],
+  items:[
+    ["le buste","het bovenlichaam / de romp"],
+    ["la poitrine","de borstkas"],
+    ["les seins","de borsten (m.)"],
+    ["le dos","de rug"],
+    ["le ventre","de buik"],
+    ["le nombril","de navel"],
+    ["l'épaule","de schouder (v.)"],
+    ["le bras","de arm"],
+    ["le coude","de elleboog"],
+    ["la main","de hand"],
+    ["la paume","de handpalm"],
+    ["la hanche","de heup"],
+    ["les fesses","de billen (v.)"],
+    ["la cuisse","de dij"],
+    ["la jambe","het been"],
+    ["le genou","de knie"],
+    ["le mollet","de kuit"],
+    ["la cheville","de enkel"],
+    ["l'orteil","de teen (m.)"],
+    ["le crâne","de schedel"],
+    ["le pénis","de penis"],
+    ["le vagin","de vagina"],
+    ["les cheveux","het haar"],
+    ["le front","het voorhoofd"],
+    ["le sourcil","de wenkbrauw"],
+    ["les cils","de wimpers"],
+    ["l'œil","het oog (m.)"],
+    ["les yeux","de ogen (m.)"],
+    ["l'oreille","het oor (v.)"],
+    ["le nez","de neus"],
+    ["la joue","de wang"],
+    ["la bouche","de mond"],
+    ["les dents","de tanden"],
+    ["la langue","de tong"],
+    ["le menton","de kin"],
+    ["le cou","de nek / de hals"],
+    ["le poids","het gewicht"],
+    ["suivre un régime","een dieet volgen"],
+    ["épiler","ontharen"],
+    ["transpirer","zweten"],
+    ["improviser","improviseren"],
+    ["le corps","het lichaam"],
+    ["les poils","de haartjes / lichaamsbeharing"],
+    ["l'apparence physique","het uiterlijk"],
+    ["une opération","een operatie"],
+    ["maigrir","vermageren / afvallen"],
+    ["peser","wegen"],
+    ["réfléchir","nadenken"]
+  ]}
+];
+
+var WERELDEN=[
+  {id:"primair", naam:"Primair", onder:"Het volledige leerplan, 5e leerjaar tot 4de middelbaar", datum:""},
+  {id:"tijdelijk", naam:"Tijdelijk", onder:"Les parties du corps · Défi 1 — Mission 1 · p. 35-36",
+   datum:"Toets 11/09"}
+];
+function wereldNu(){
+  var w=WERELDEN[0];
+  WERELDEN.forEach(function(x){if(x.id===S.wereld)w=x});
+  return w;
+}
+/* Vult SETS, ZINNEN en NIVEAUS met de stof van de actieve wereld. */
+function bouwWereld(){
+  if(S.wereld==="tijdelijk"){
+    SETS=BOEK.map(function(h){
+      return {id:h.id, titel:h.titel, hoofdstuk:h.groep, sectie:"Woordenschat",
+              soort:"voc", items:h.items, bron:h.bron};
+    });
+    ZINNEN=[];
+    BOEK.forEach(function(h){
+      (h.zinnen||[]).forEach(function(z){
+        ZINNEN.push({fr:z[0], nl:z[1], set:h.id, hoofdstuk:h.groep,
+                     puzzel:z[0].split(/\s+/).length<=12});
+      });
+    });
+  } else {
+    SETS=DATA.sets.slice(); ZINNEN=DATA.zinnen;
+  }
+  NIVEAUS=[];
+  SETS.forEach(function(s){if(NIVEAUS.indexOf(s.hoofdstuk)<0)NIVEAUS.push(s.hoofdstuk)});
+  PAD=null; VLAK=null;
+  var n=0; SETS.forEach(function(s){n+=s.items.length});
+  var w=wereldNu();
+  $("#subkop").textContent = S.wereld==="tijdelijk"
+    ? w.datum+" · "+n+" woorden · "+ZINNEN.length+" zinnen"
+    : "Frans · "+SETS.length+" thema's · B1";
+  $("#btnBoek").classList.toggle("tijdelijk",S.wereld==="tijdelijk");
+}
+function wisselWereld(id){
+  if(S.wereld===id){$("#boek").hidden=true; return}
+  S.padden[S.wereld]=S.pad;              /* voortgang van elke wereld apart bewaren */
+  S.sels[S.wereld]=S.sel;
+  S.wereld=id;
+  S.pad=S.padden[id]||def().pad;
+  S.sel=(id in S.sels)?S.sels[id]:null;
+  save(); bouwWereld(); tekenNiveaus(); werkSelbarBij();
+  $("#boek").hidden=true;
+  zetModus(START[S.mode]?S.mode:"parcours");
+}
+function tekenWerelden(){
+  var lijst=$("#boekLijst"); lijst.innerHTML="";
+  WERELDEN.forEach(function(w){
+    var actief=(w.id===S.wereld);
+    var kaart=el("div","bkaart"+(actief?" actief":""));
+    var kop=el("div","bkop");
+    var titelrij=el("div","btitel");
+    titelrij.appendChild(el("b",null,w.naam));
+    if(w.datum)titelrij.appendChild(el("span","bdatum",w.datum));
+    if(actief)titelrij.appendChild(el("span","bnu","nu actief"));
+    kop.appendChild(titelrij);
+    kop.appendChild(el("span",null,w.onder));
+    kaart.appendChild(kop);
+    /* tellingen zonder de wereld te wisselen */
+    var sets = w.id==="tijdelijk" ? BOEK : DATA.sets;
+    var woorden=0, zinnen=0;
+    sets.forEach(function(s){woorden+=s.items.length; zinnen+=(s.zinnen?s.zinnen.length:0)});
+    if(w.id!=="tijdelijk")zinnen=DATA.zinnen.length;
+    kaart.appendChild(el("div","bmeta",
+      sets.length+" thema"+(sets.length===1?"":"'s")+" · "+woorden+" woorden · "+zinnen+" zinnen"));
+    var knop=el("button",null,actief?"Je oefent dit nu":"Hierop overschakelen");
+    knop.type="button"; knop.className="bswitch"+(actief?" uit":"");
+    knop.addEventListener("click",function(){wisselWereld(w.id)});
+    kaart.appendChild(knop);
+    lijst.appendChild(kaart);
+  });
+}
+$("#btnBoek").addEventListener("click",function(){$("#boek").hidden=false; tekenWerelden()});
+$("#boekSluit").addEventListener("click",function(){$("#boek").hidden=true});
 
 /* ---------- PARCOURS: stap voor stap door het hele leerplan ---------- */
 var PER_LES=8, DAGDOEL=30, PAD=null;
@@ -1624,7 +1817,7 @@ document.addEventListener("keydown",function(e){
 /* ---------- start ---------- */
 $$("#richting button").forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.d===S.richting))});
 $$("#accent button").forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.a===S.accent))});
-$("#subkop").textContent="Frans · "+SETS.length+" thema's · B1";
+bouwWereld();
 tekenNiveaus(); werkSelbarBij();
 zetModus(S.mode&&START[S.mode]?S.mode:"kaarten");
 })();
