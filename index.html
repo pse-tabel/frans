@@ -326,6 +326,15 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
 .bswitch{font-family:var(--fu); font-size:13px; font-weight:700; padding:12px; border-radius:10px;
   cursor:pointer; color:var(--ink); background:var(--voc); border:0}
 .bswitch.uit{background:transparent; color:var(--muted2); border:1px solid var(--line); cursor:default}
+.bslot{font-family:var(--fm); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted2); border:1px solid var(--line2); border-radius:7px; padding:3px 8px}
+.bcode{display:flex; gap:7px}
+.bcode input{flex:1; min-width:0; font-family:var(--fu); font-size:15px; padding:11px 13px;
+  border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--text)}
+.bcode input:focus{outline:none; border-color:var(--voc)}
+.bcode button{flex:none; font-family:var(--fu); font-size:13px; font-weight:700; padding:11px 16px;
+  border-radius:10px; border:0; color:var(--ink); background:var(--voc); cursor:pointer}
+.bfout{margin:0; font-size:12px; color:var(--bad); min-height:15px}
 
 /* ---------- parcours ---------- */
 .padkop{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
@@ -475,6 +484,8 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
       </div>
     </div>
     <button class="reset" id="btnReset">Voortgang wissen</button>
+    <button class="reset" id="btnSlot" style="color:var(--muted);border-color:var(--line)"
+      hidden>Primair weer op slot zetten</button>
   </div>
 
   <!-- PARCOURS -->
@@ -589,7 +600,8 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
   <div class="kbox">
     <div class="kkop"><h2>Wat oefen je?</h2><button class="kklaar" id="boekSluit">Sluiten</button></div>
     <p class="note">Twee volledige versies van de app, elk met hun eigen parcours, kaarten, zinsbouw
-      en voortgang. Wisselen kan altijd — je verliest niets.</p>
+      en voortgang. De tijdelijke versie staat open voor iedereen; voor de primaire heb je een code
+      nodig. Eenmaal ingevoerd blijft die onthouden op dit toestel.</p>
     <div class="klijst" id="boekLijst" style="background:transparent; border:0; gap:11px; padding:2px"></div>
   </div>
 </div>
@@ -631,7 +643,7 @@ var SETS=[], ZINNEN=[], NIVEAUS=[];
 var KEY="motamot-v1";
 function def(){return {v:2,mode:"parcours",richting:"fr",accent:"soepel",sel:null,soort:{voc:1,gram:1,werkw:1},
   niveau:null,prog:{},best:null,
-  wereld:"primair", padden:{}, sels:{},
+  wereld:"primair", padden:{}, sels:{}, ontgrendeld:false,
   pad:{kronen:{},poorten:{},xp:0,reeks:0,laatste:null,vandaag:0,start:null,startLes:null}}}
 var S=def();
 try{var r=JSON.parse(localStorage.getItem(KEY)||"null");
@@ -1376,6 +1388,16 @@ var WERELDEN=[
   {id:"tijdelijk", naam:"Tijdelijk", onder:"Les parties du corps · Défi 1 — Mission 1 · p. 35-36",
    datum:"Toets 11/09"}
 ];
+/* Tijdelijke drempel op de primaire versie. De code staat niet leesbaar in het
+   bestand, alleen een getal dat eruit berekend is — geen echt slot, wel een drempel. */
+var CODE_SOM=3299350345;
+function codeSom(s){
+  var h=5381;
+  for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;
+  return h;
+}
+function opSlot(id){return id==="primair"&&!S.ontgrendeld}
+
 function wereldNu(){
   var w=WERELDEN[0];
   WERELDEN.forEach(function(x){if(x.id===S.wereld)w=x});
@@ -1407,6 +1429,7 @@ function bouwWereld(){
     ? w.datum+" · "+n+" woorden · "+ZINNEN.length+" zinnen"
     : "Frans · "+SETS.length+" thema's · B1";
   $("#btnBoek").classList.toggle("tijdelijk",S.wereld==="tijdelijk");
+  $("#btnSlot").hidden=!S.ontgrendeld;
 }
 function wisselWereld(id){
   if(S.wereld===id){$("#boek").hidden=true; return}
@@ -1422,13 +1445,14 @@ function wisselWereld(id){
 function tekenWerelden(){
   var lijst=$("#boekLijst"); lijst.innerHTML="";
   WERELDEN.forEach(function(w){
-    var actief=(w.id===S.wereld);
+    var actief=(w.id===S.wereld), dicht=opSlot(w.id);
     var kaart=el("div","bkaart"+(actief?" actief":""));
     var kop=el("div","bkop");
     var titelrij=el("div","btitel");
     titelrij.appendChild(el("b",null,w.naam));
     if(w.datum)titelrij.appendChild(el("span","bdatum",w.datum));
     if(actief)titelrij.appendChild(el("span","bnu","nu actief"));
+    if(dicht)titelrij.appendChild(el("span","bslot","code nodig"));
     kop.appendChild(titelrij);
     kop.appendChild(el("span",null,w.onder));
     kaart.appendChild(kop);
@@ -1439,12 +1463,39 @@ function tekenWerelden(){
     if(w.id!=="tijdelijk")zinnen=DATA.zinnen.length;
     kaart.appendChild(el("div","bmeta",
       sets.length+" thema"+(sets.length===1?"":"'s")+" · "+woorden+" woorden · "+zinnen+" zinnen"));
-    var knop=el("button",null,actief?"Je oefent dit nu":"Hierop overschakelen");
+    var knop=el("button",null,actief?"Je oefent dit nu":(dicht?"Code invoeren":"Hierop overschakelen"));
     knop.type="button"; knop.className="bswitch"+(actief?" uit":"");
-    knop.addEventListener("click",function(){wisselWereld(w.id)});
+    knop.addEventListener("click",function(){
+      if(dicht){vraagCode(kaart,knop,w); return}
+      wisselWereld(w.id);
+    });
     kaart.appendChild(knop);
     lijst.appendChild(kaart);
   });
+}
+function vraagCode(kaart,knop,w){
+  knop.remove();
+  var vak=el("div","bcode");
+  var inp=document.createElement("input");
+  inp.type="password"; inp.placeholder="toegangscode";
+  inp.setAttribute("autocomplete","off"); inp.setAttribute("aria-label","Toegangscode");
+  var ok=el("button",null,"Open"); ok.type="button";
+  var melding=el("p","bfout","");
+  function probeer(){
+    if(codeSom(inp.value.trim().toLowerCase())===CODE_SOM){
+      S.ontgrendeld=true; save(); wisselWereld(w.id);
+    } else {
+      melding.textContent="Die code klopt niet.";
+      inp.value=""; inp.classList.add("shake");
+      setTimeout(function(){inp.classList.remove("shake")},350);
+      inp.focus();
+    }
+  }
+  ok.addEventListener("click",probeer);
+  inp.addEventListener("keydown",function(e){if(e.key==="Enter")probeer()});
+  vak.appendChild(inp); vak.appendChild(ok);
+  kaart.appendChild(vak); kaart.appendChild(melding);
+  inp.focus();
 }
 $("#btnBoek").addEventListener("click",function(){$("#boek").hidden=false; tekenWerelden()});
 $("#boekSluit").addEventListener("click",function(){$("#boek").hidden=true});
@@ -1780,6 +1831,11 @@ $$("#accent button").forEach(function(b){
     $$("#accent button").forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.a===S.accent))});
   });
 });
+$("#btnSlot").addEventListener("click",function(){
+  S.ontgrendeld=false; S.wereld="tijdelijk"; save();
+  bouwWereld(); tekenNiveaus(); werkSelbarBij(); zetModus(S.mode);
+  $("#btnSlot").hidden=true;
+});
 $("#btnReset").addEventListener("click",function(){
   if(!confirm("Alle voortgang en je matchrecord wissen?"))return;
   S.prog={}; S.best=null; save(); ververs();
@@ -1817,6 +1873,7 @@ document.addEventListener("keydown",function(e){
 /* ---------- start ---------- */
 $$("#richting button").forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.d===S.richting))});
 $$("#accent button").forEach(function(x){x.setAttribute("aria-pressed",String(x.dataset.a===S.accent))});
+if(opSlot(S.wereld))S.wereld="tijdelijk";   /* zonder code start je in de tijdelijke versie */
 bouwWereld();
 tekenNiveaus(); werkSelbarBij();
 zetModus(S.mode&&START[S.mode]?S.mode:"kaarten");
