@@ -285,6 +285,37 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
 .trij .pb i{display:block; height:100%; background:var(--c); border-radius:99px}
 .note{font-size:11.5px; color:var(--muted2); line-height:1.55; margin:0}
 
+/* ---------- samenvatting ---------- */
+.slijst{display:grid; gap:12px}
+.svak{border:1px solid var(--line); border-radius:13px; overflow:hidden; background:var(--ink2)}
+.skop{padding:11px 14px 9px; border-bottom:1px solid var(--line);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 10%,var(--ink2)),var(--ink2))}
+.skop b{display:block; font-family:var(--fd); font-size:15px; font-weight:700; line-height:1.25}
+.skop span{font-family:var(--fm); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted2)}
+.srij{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:7px 14px; font-size:13.5px;
+  border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+.srij:last-child{border-bottom:0}
+.srij .fr{font-weight:700; color:var(--c)}
+.srij .nl{color:var(--muted)}
+.srij.zin{grid-template-columns:1fr; gap:2px; padding:9px 14px}
+.srij.zin .nl{font-size:12.5px}
+
+@media print{
+  .glow,.grid-bg,.statusbar,.tabs,.selbar,.panel,.install,.gear,.mark,.meta{display:none !important}
+  body{background:#fff; color:#000}
+  .app{max-width:none; padding:0; display:block}
+  .tt h1{color:#000; font-size:20px} .tt p{color:#555}
+  .top{border-bottom:1px solid #999; padding-bottom:6px; margin-bottom:10px}
+  .slijst{columns:2; column-gap:22px; display:block}
+  .svak{break-inside:avoid; page-break-inside:avoid; border:1px solid #bbb; background:#fff;
+    margin:0 0 10px; border-radius:6px}
+  .skop{background:#f2f2f2; border-bottom:1px solid #bbb}
+  .skop b{color:#000; font-size:13px} .skop span{color:#555}
+  .srij{border-bottom:1px solid #e4e4e4; font-size:11px; padding:4px 9px}
+  .srij .fr{color:#000} .srij .nl{color:#333}
+}
+
 /* ---------- installeren ---------- */
 .install{display:flex; align-items:center; gap:11px; padding:12px 13px; border-radius:13px;
   border:1px solid color-mix(in srgb,var(--voc) 34%,transparent);
@@ -460,6 +491,7 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
     <button class="tab" role="tab" data-m="matchen" aria-selected="false">Matchen</button>
     <button class="tab" role="tab" data-m="toets" aria-selected="false">Toets</button>
     <button class="tab" role="tab" data-m="voortgang" aria-selected="false">Voortgang</button>
+    <button class="tab" role="tab" data-m="samenvatting" aria-selected="false">Samenvatting</button>
   </nav>
 
   <div class="selbar">
@@ -475,6 +507,11 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
         <button data-d="nl" aria-pressed="false">Nederlands → Frans</button>
         <button data-d="mix" aria-pressed="false">Door elkaar</button>
       </div>
+    </div>
+    <div class="fset" id="extraSet" hidden>
+      <span class="flabel">Extra woorden meenemen</span>
+      <div class="chips" id="extraChips"></div>
+      <p class="note" id="extraNote"></p>
     </div>
     <div class="fset">
       <span class="flabel">Accenten</span>
@@ -588,6 +625,15 @@ input.goed{border-color:var(--ok); color:var(--ok)} input.fout{border-color:var(
       terug, zodat de lastige woorden vanzelf blijven terugkomen in <b>Leren</b>.</p>
   </section>
 
+  <!-- SAMENVATTING -->
+  <section class="view" id="v-samenvatting" role="tabpanel" hidden>
+    <div class="meta">
+      <span class="counter" id="svInfo">—</span>
+      <button class="mini" id="btnPrint">afdrukken</button>
+    </div>
+    <div id="svBody"></div>
+  </section>
+
   <div class="install" id="install" hidden>
     <div class="itxt"><b>Zet 'm op je beginscherm</b><span id="ihow"></span></div>
     <button class="btn pri" id="iBtn" hidden>Installeren</button>
@@ -643,12 +689,12 @@ var SETS=[], ZINNEN=[], NIVEAUS=[];
 var KEY="motamot-v1";
 function def(){return {v:2,mode:"parcours",richting:"fr",accent:"soepel",sel:null,soort:{voc:1,gram:1,werkw:1},
   niveau:null,prog:{},best:null,
-  wereld:"primair", padden:{}, sels:{}, ontgrendeld:false,
+  wereld:"primair", padden:{}, sels:{}, ontgrendeld:false, extras:{},
   pad:{kronen:{},poorten:{},xp:0,reeks:0,laatste:null,vandaag:0,start:null,startLes:null}}}
 var S=def();
 try{var r=JSON.parse(localStorage.getItem(KEY)||"null");
   if(r&&typeof r==="object"){S=Object.assign(def(),r); S.soort=Object.assign(def().soort,r.soort||{});
-    S.prog=r.prog||{}; S.pad=Object.assign(def().pad,r.pad||{});
+    S.prog=r.prog||{}; S.extras=r.extras||{}; S.pad=Object.assign(def().pad,r.pad||{});
     S.pad.kronen=S.pad.kronen||{}; S.pad.poorten=S.pad.poorten||{}}
 }catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -1227,6 +1273,54 @@ function tekenVoortgang(){
   });
 }
 
+/* ---------- SAMENVATTING: alle stof van je selectie op één blad ---------- */
+function tekenSamenvatting(){
+  var body=$("#svBody"); body.innerHTML="";
+  $("#glow").style.setProperty("--c","var(--gram)");
+  var sets=gekozenSets(), n=0;
+  sets.forEach(function(s){n+=s.items.length});
+
+  var ids={}, hs={};
+  sets.forEach(function(s){ids[s.id]=1; hs[s.hoofdstuk]=1});
+  var zin=ZINNEN.filter(function(z){return z.set&&ids[z.set]});
+  if(zin.length<3)zin=ZINNEN.filter(function(z){return hs[z.hoofdstuk]});
+
+  $("#svInfo").textContent=sets.length+" thema"+(sets.length===1?"":"'s")+" · "+
+    n+" woorden"+(zin.length?" · "+zin.length+" zinnen":"");
+
+  var wrap=el("div","slijst");
+  sets.forEach(function(st){
+    var vak=el("div","svak"); vak.style.setProperty("--c",kleurVan(st.soort));
+    var kop=el("div","skop");
+    kop.appendChild(el("b",null,st.titel));
+    kop.appendChild(el("span",null,(st.bron||st.hoofdstuk)+" · "+st.items.length+" woorden"));
+    vak.appendChild(kop);
+    st.items.forEach(function(p){
+      var r=el("div","srij");
+      r.appendChild(el("span","fr",p[0]));
+      r.appendChild(el("span","nl",p[1]));
+      vak.appendChild(r);
+    });
+    wrap.appendChild(vak);
+  });
+  if(zin.length){
+    var zv=el("div","svak"); zv.style.setProperty("--c","var(--zin)");
+    var zk=el("div","skop");
+    zk.appendChild(el("b",null,"Voorbeeldzinnen"));
+    zk.appendChild(el("span",null,zin.length+" zinnen"));
+    zv.appendChild(zk);
+    zin.forEach(function(z){
+      var r=el("div","srij zin");
+      r.appendChild(el("span","fr",z.fr));
+      if(z.nl)r.appendChild(el("span","nl",z.nl));
+      zv.appendChild(r);
+    });
+    wrap.appendChild(zv);
+  }
+  body.appendChild(wrap);
+}
+$("#btnPrint").addEventListener("click",function(){window.print()});
+
 /* ---------- themakiezer ---------- */
 function openKiezer(){$("#kiezer").hidden=false; tekenKiezer(); setTimeout(function(){$("#kZoek").focus()},100)}
 function sluitKiezer(){$("#kiezer").hidden=true; save(); ververs()}
@@ -1317,10 +1411,11 @@ $$("#kSoort .chip").forEach(function(b){
 
 /* ---------- MIJN BOEK: hoofdstukken uit het eigen lesboek ---------- */
 var BOEK=[
- {id:"boek-defi1-corps",
-  titel:"Les parties du corps",
+ {id:"boek-corps-kern",
+  titel:"Woordenbank p. 35",
   groep:"Toets 11/09",
-  bron:"Défi 1 — Mission 1 · p. 35-36",
+  bron:"Défi 1 — Mission 1 · oefening 27",
+  extra:false,
   zinnen:[
     ["Je trouve mon apparence physique très importante.","Ik vind mijn uiterlijk heel belangrijk."],
     ["Je suis content de mon apparence physique.","Ik ben tevreden met mijn uiterlijk."],
@@ -1332,28 +1427,35 @@ var BOEK=[
     ["Quand tu fais du sport, tu vas transpirer.","Als je sport, ga je zweten."]
   ],
   items:[
-    ["le buste","het bovenlichaam / de romp"],
-    ["la poitrine","de borstkas"],
-    ["les seins","de borsten (m.)"],
-    ["le dos","de rug"],
-    ["le ventre","de buik"],
-    ["le nombril","de navel"],
-    ["l'épaule","de schouder (v.)"],
-    ["le bras","de arm"],
-    ["le coude","de elleboog"],
     ["la main","de hand"],
-    ["la paume","de handpalm"],
-    ["la hanche","de heup"],
-    ["les fesses","de billen (v.)"],
-    ["la cuisse","de dij"],
-    ["la jambe","het been"],
-    ["le genou","de knie"],
-    ["le mollet","de kuit"],
-    ["la cheville","de enkel"],
-    ["l'orteil","de teen (m.)"],
-    ["le crâne","de schedel"],
-    ["le pénis","de penis"],
+    ["l'épaule","de schouder (v.)"],
     ["le vagin","de vagina"],
+    ["le nombril","de navel"],
+    ["le dos","de rug"],
+    ["la jambe","het been"],
+    ["la cuisse","de dij"],
+    ["le pénis","de penis"],
+    ["le coude","de elleboog"],
+    ["le genou","de knie"],
+    ["les fesses","de billen (v.)"],
+    ["les seins","de borsten (m.)"],
+    ["le crâne","de schedel"],
+    ["le mollet","de kuit"],
+    ["l'orteil","de teen (m.)"],
+    ["le ventre","de buik"],
+    ["la hanche","de heup"],
+    ["la poitrine","de borstkas"],
+    ["la cheville","de enkel"],
+    ["le bras","de arm"],
+    ["le buste","het bovenlichaam / de romp"],
+    ["la paume","de handpalm"]
+  ]},
+ {id:"boek-corps-gezicht",
+  titel:"Gezicht en hoofd",
+  groep:"Toets 11/09",
+  bron:"Défi 1 — Mission 1 · p. 34",
+  extra:false,
+  items:[
     ["les cheveux","het haar"],
     ["le front","het voorhoofd"],
     ["le sourcil","de wenkbrauw"],
@@ -1367,7 +1469,14 @@ var BOEK=[
     ["les dents","de tanden"],
     ["la langue","de tong"],
     ["le menton","de kin"],
-    ["le cou","de nek / de hals"],
+    ["le cou","de nek / de hals"]
+  ]},
+ {id:"boek-corps-oef26",
+  titel:"Oefening 26 en de opgaven",
+  groep:"Toets 11/09",
+  bron:"Défi 1 — Mission 1 · p. 35",
+  extra:true,
+  items:[
     ["le poids","het gewicht"],
     ["suivre un régime","een dieet volgen"],
     ["épiler","ontharen"],
@@ -1406,14 +1515,16 @@ function wereldNu(){
 /* Vult SETS, ZINNEN en NIVEAUS met de stof van de actieve wereld. */
 function bouwWereld(){
   if(S.wereld==="tijdelijk"){
-    SETS=BOEK.map(function(h){
+    /* standaard alleen de woordenbank; elk extra blok zet je apart aan bij het tandwiel */
+    var blokken=BOEK.filter(function(h){return !h.extra||S.extras[h.id]});
+    SETS=blokken.map(function(h){
       return {id:h.id, titel:h.titel, hoofdstuk:h.groep, sectie:"Woordenschat",
               soort:"voc", items:h.items, bron:h.bron};
     });
     ZINNEN=[];
     BOEK.forEach(function(h){
       (h.zinnen||[]).forEach(function(z){
-        ZINNEN.push({fr:z[0], nl:z[1], set:h.id, hoofdstuk:h.groep,
+        ZINNEN.push({fr:z[0], nl:z[1], set:BOEK[0].id, hoofdstuk:h.groep,
                      puzzel:z[0].split(/\s+/).length<=12});
       });
     });
@@ -1430,6 +1541,27 @@ function bouwWereld(){
     : "Frans · "+SETS.length+" thema's · B1";
   $("#btnBoek").classList.toggle("tijdelijk",S.wereld==="tijdelijk");
   $("#btnSlot").hidden=!S.ontgrendeld;
+  $("#extraSet").hidden=(S.wereld!=="tijdelijk");
+  if(S.wereld==="tijdelijk")tekenExtraChips();
+}
+
+/* Eén chip per extra blok: aanklikken zet dat blok in de hele app aan of uit. */
+function tekenExtraChips(){
+  var box=$("#extraChips"); box.innerHTML="";
+  var kern=0;
+  BOEK.forEach(function(h){if(!h.extra)kern+=h.items.length});
+  BOEK.filter(function(h){return h.extra}).forEach(function(h){
+    var b=el("button","chip",h.titel+" ("+h.items.length+")");
+    b.type="button"; b.style.setProperty("--cc","var(--zin)");
+    b.setAttribute("aria-pressed",String(!!S.extras[h.id]));
+    b.addEventListener("click",function(){
+      S.extras[h.id]=!S.extras[h.id]; S.sel=null; save();
+      bouwWereld(); tekenNiveaus(); werkSelbarBij(); zetModus(S.mode);
+    });
+    box.appendChild(b);
+  });
+  $("#extraNote").textContent="De lichaamsdelen ("+kern+
+    " woorden) staan altijd aan. Wat je hier aanzet, komt overal terug: kaarten, parcours, toets en samenvatting.";
 }
 function wisselWereld(id){
   if(S.wereld===id){$("#boek").hidden=true; return}
@@ -1457,12 +1589,25 @@ function tekenWerelden(){
     kop.appendChild(el("span",null,w.onder));
     kaart.appendChild(kop);
     /* tellingen zonder de wereld te wisselen */
-    var sets = w.id==="tijdelijk" ? BOEK : DATA.sets;
-    var woorden=0, zinnen=0;
-    sets.forEach(function(s){woorden+=s.items.length; zinnen+=(s.zinnen?s.zinnen.length:0)});
-    if(w.id!=="tijdelijk")zinnen=DATA.zinnen.length;
-    kaart.appendChild(el("div","bmeta",
-      sets.length+" thema"+(sets.length===1?"":"'s")+" · "+woorden+" woorden · "+zinnen+" zinnen"));
+    if(w.id==="tijdelijk"){
+      var kern=0, alles=0, zin=0;
+      BOEK.forEach(function(h){
+        alles+=h.items.length; if(!h.extra)kern+=h.items.length;
+        zin+=(h.zinnen?h.zinnen.length:0);
+      });
+      kaart.appendChild(el("div","bmeta",
+        kern+" woorden lichaamsdelen · "+zin+" zinnen"));
+      var aan=0;
+      BOEK.forEach(function(h){if(h.extra&&S.extras[h.id])aan+=h.items.length});
+      kaart.appendChild(el("div","bmeta", aan
+        ? "+ "+aan+" van de "+(alles-kern)+" extra woorden staan aan"
+        : "+ "+(alles-kern)+" extra woorden, aan te zetten bij het tandwiel"));
+    } else {
+      var woorden=0;
+      DATA.sets.forEach(function(s){woorden+=s.items.length});
+      kaart.appendChild(el("div","bmeta",
+        DATA.sets.length+" thema's · "+woorden+" woorden · "+DATA.zinnen.length+" zinnen"));
+    }
     var knop=el("button",null,actief?"Je oefent dit nu":(dicht?"Code invoeren":"Hierop overschakelen"));
     knop.type="button"; knop.className="bswitch"+(actief?" uit":"");
     knop.addEventListener("click",function(){
@@ -1793,7 +1938,7 @@ function lesKlaar(body){
 var START={parcours:function(){LES.e=null; tekenPad()},
   kaarten:function(){kaartenStart(false)},leren:lerenStart,schrijven:schrijvenStart,
   zinsbouw:zinsbouwStart,vervoegen:vervoegenStart,matchen:matchenStart,toets:toetsStart,
-  voortgang:tekenVoortgang};
+  voortgang:tekenVoortgang, samenvatting:tekenSamenvatting};
 function leegBlok(){
   var d=el("div","tegel klaar"); d.style.setProperty("--c","var(--voc)");
   d.appendChild(el("h2",null,"Niets te oefenen"));
