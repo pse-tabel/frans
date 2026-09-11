@@ -1098,8 +1098,9 @@ var PRON=/^(je |j'|tu |il|elle|on |nous |vous |ils|elles)/i;
 function vervoegSets(){
   return SETS.filter(function(s){
     if(s.soort!=="werkw")return false;
+    if(s.items.length>8)return false;      /* lange vormenlijsten zijn geen tabel */
     var n=s.items.filter(function(p){return PRON.test(p[0])}).length;
-    return n>=5;
+    return n>=3;
   });
 }
 function vervoegenStart(){
@@ -1411,91 +1412,782 @@ $$("#kSoort .chip").forEach(function(b){
 
 /* ---------- MIJN BOEK: hoofdstukken uit het eigen lesboek ---------- */
 var BOEK=[
- {id:"boek-corps-kern",
-  titel:"Woordenbank p. 35",
-  groep:"Toets 11/09",
-  bron:"Défi 1 — Mission 1 · oefening 27",
-  extra:false,
-  zinnen:[
-    ["Je trouve mon apparence physique très importante.","Ik vind mijn uiterlijk heel belangrijk."],
-    ["Je suis content de mon apparence physique.","Ik ben tevreden met mijn uiterlijk."],
-    ["Je n'ai aucun problème avec une opération.","Ik heb geen enkel probleem met een operatie."],
-    ["Le poids, c'est combien tu pèses.","Het gewicht is hoeveel je weegt."],
-    ["Suivre un régime, c'est manger léger.","Een dieet volgen is licht eten."],
-    ["Épiler, c'est enlever les poils du corps.","Ontharen is de haartjes van het lichaam verwijderen."],
-    ["Improviser, c'est faire quelque chose sans réfléchir.","Improviseren is iets doen zonder na te denken."],
-    ["Quand tu fais du sport, tu vas transpirer.","Als je sport, ga je zweten."]
+ {
+  "id": "v14-er",
+  "titel": "Infinitieven: regelmatig op -er",
+  "groep": "Toets 14/09 · infinitieven",
+  "bron": "blad 2-3 · EDG p. 29 (parler)",
+  "extra": false,
+  "soort": "voc",
+  "items": [
+   [
+    "(s') habiller",
+    "(zich) aankleden"
+   ],
+   [
+    "accompagner",
+    "vergezellen, meegaan"
+   ],
+   [
+    "adorer",
+    "bewonderen, dol zijn op"
+   ],
+   [
+    "aimer",
+    "houden van"
+   ],
+   [
+    "apprécier",
+    "waarderen"
+   ],
+   [
+    "arriver",
+    "aankomen"
+   ],
+   [
+    "associer à",
+    "verbinden met, in verband brengen met"
+   ],
+   [
+    "briller",
+    "schijnen"
+   ],
+   [
+    "calmer",
+    "kalmeren"
+   ],
+   [
+    "créer",
+    "creëren, bedenken, scheppen"
+   ],
+   [
+    "décorer",
+    "decoreren"
+   ],
+   [
+    "déguster",
+    "proeven, degusteren"
+   ],
+   [
+    "dessiner",
+    "tekenen"
+   ],
+   [
+    "deviner",
+    "raden"
+   ],
+   [
+    "donner",
+    "geven"
+   ],
+   [
+    "écouter",
+    "luisteren (naar)"
+   ],
+   [
+    "embrasser",
+    "omhelzen, kussen"
+   ],
+   [
+    "énerver",
+    "irriteren"
+   ],
+   [
+    "essayer (des vêtements)",
+    "(kleren) passen"
+   ],
+   [
+    "essayer",
+    "proberen"
+   ],
+   [
+    "éviter",
+    "vermijden"
+   ],
+   [
+    "explorer",
+    "verkennen"
+   ],
+   [
+    "fonctionner",
+    "werken, functioneren"
+   ],
+   [
+    "gagner",
+    "winnen"
+   ],
+   [
+    "gêner",
+    "storen, generen"
+   ],
+   [
+    "gouter",
+    "proeven"
+   ],
+   [
+    "habiter",
+    "wonen"
+   ],
+   [
+    "hésiter (entre)",
+    "twijfelen, aarzelen (tussen)"
+   ],
+   [
+    "informer",
+    "informeren"
+   ],
+   [
+    "inventer",
+    "uitvinden"
+   ],
+   [
+    "jouer",
+    "spelen"
+   ],
+   [
+    "louer",
+    "huren"
+   ],
+   [
+    "motiver qqn à",
+    "iemand motiveren om"
+   ],
+   [
+    "penser",
+    "denken"
+   ],
+   [
+    "pleurer",
+    "huilen, wenen"
+   ],
+   [
+    "profiter de",
+    "genieten van"
+   ],
+   [
+    "progresser",
+    "vooruitgaan"
+   ],
+   [
+    "réaliser",
+    "realiseren, waarmaken"
+   ],
+   [
+    "refuser (de)",
+    "weigeren (om)"
+   ],
+   [
+    "regarder",
+    "kijken"
+   ],
+   [
+    "rencontrer",
+    "ontmoeten"
+   ],
+   [
+    "rester",
+    "blijven"
+   ],
+   [
+    "retourner",
+    "terugkeren"
+   ],
+   [
+    "s'énerver",
+    "zich opwinden"
+   ],
+   [
+    "s'entrainer",
+    "trainen"
+   ],
+   [
+    "s'exprimer",
+    "zich uitdrukken, zich uiten"
+   ],
+   [
+    "se fâcher (contre qqn)",
+    "boos worden (op iemand)"
+   ],
+   [
+    "se reposer",
+    "(uit)rusten"
+   ],
+   [
+    "se ressembler",
+    "lijken op elkaar"
+   ],
+   [
+    "se situer",
+    "zich bevinden, gesitueerd zijn"
+   ],
+   [
+    "sembler",
+    "lijken"
+   ],
+   [
+    "serrer",
+    "knellen"
+   ],
+   [
+    "surfer",
+    "surfen"
+   ],
+   [
+    "traiter un sujet",
+    "een onderwerp behandelen"
+   ],
+   [
+    "travailler",
+    "werken"
+   ],
+   [
+    "trembler",
+    "beven"
+   ],
+   [
+    "trouver",
+    "vinden"
+   ],
+   [
+    "utiliser",
+    "gebruiken"
+   ]
   ],
-  items:[
-    ["la main","de hand"],
-    ["l'épaule","de schouder (v.)"],
-    ["le vagin","de vagina"],
-    ["le nombril","de navel"],
-    ["le dos","de rug"],
-    ["la jambe","het been"],
-    ["la cuisse","de dij"],
-    ["le pénis","de penis"],
-    ["le coude","de elleboog"],
-    ["le genou","de knie"],
-    ["les fesses","de billen (v.)"],
-    ["les seins","de borsten (m.)"],
-    ["le crâne","de schedel"],
-    ["le mollet","de kuit"],
-    ["l'orteil","de teen (m.)"],
-    ["le ventre","de buik"],
-    ["la hanche","de heup"],
-    ["la poitrine","de borstkas"],
-    ["la cheville","de enkel"],
-    ["le bras","de arm"],
-    ["le buste","het bovenlichaam / de romp"],
-    ["la paume","de handpalm"]
-  ]},
- {id:"boek-corps-gezicht",
-  titel:"Gezicht en hoofd",
-  groep:"Toets 11/09",
-  bron:"Défi 1 — Mission 1 · p. 34",
-  extra:false,
-  items:[
-    ["les cheveux","het haar"],
-    ["le front","het voorhoofd"],
-    ["le sourcil","de wenkbrauw"],
-    ["les cils","de wimpers"],
-    ["l'œil","het oog (m.)"],
-    ["les yeux","de ogen (m.)"],
-    ["l'oreille","het oor (v.)"],
-    ["le nez","de neus"],
-    ["la joue","de wang"],
-    ["la bouche","de mond"],
-    ["les dents","de tanden"],
-    ["la langue","de tong"],
-    ["le menton","de kin"],
-    ["le cou","de nek / de hals"]
-  ]},
- {id:"boek-corps-oef26",
-  titel:"Oefening 26 en de opgaven",
-  groep:"Toets 11/09",
-  bron:"Défi 1 — Mission 1 · p. 35",
-  extra:true,
-  items:[
-    ["le poids","het gewicht"],
-    ["suivre un régime","een dieet volgen"],
-    ["épiler","ontharen"],
-    ["transpirer","zweten"],
-    ["improviser","improviseren"],
-    ["le corps","het lichaam"],
-    ["les poils","de haartjes / lichaamsbeharing"],
-    ["l'apparence physique","het uiterlijk"],
-    ["une opération","een operatie"],
-    ["maigrir","vermageren / afvallen"],
-    ["peser","wegen"],
-    ["réfléchir","nadenken"]
-  ]}
+  "zinnen": [
+   [
+    "Nous ne prenons pas de café.",
+    "Wij nemen geen koffie."
+   ],
+   [
+    "Elle ne me croit pas.",
+    "Zij gelooft mij niet."
+   ],
+   [
+    "Nadine, fais attention !",
+    "Nadine, let op!"
+   ]
+  ]
+ },
+ {
+  "id": "v14-er-bijz",
+  "titel": "Infinitieven: -er met spellingverandering",
+  "groep": "Toets 14/09 · infinitieven",
+  "bron": "blad 3-4 · EDG p. 29",
+  "extra": false,
+  "soort": "voc",
+  "items": [
+   [
+    "manger",
+    "eten"
+   ],
+   [
+    "bouger",
+    "bewegen"
+   ],
+   [
+    "corriger",
+    "verbeteren"
+   ],
+   [
+    "déménager",
+    "verhuizen"
+   ],
+   [
+    "interroger",
+    "ondervragen"
+   ],
+   [
+    "loger",
+    "verblijven, logeren"
+   ],
+   [
+    "neiger",
+    "sneeuwen"
+   ],
+   [
+    "ranger",
+    "opruimen"
+   ],
+   [
+    "se protéger (contre)",
+    "zich beschermen (tegen)"
+   ],
+   [
+    "voyager",
+    "reizen"
+   ],
+   [
+    "commencer",
+    "beginnen"
+   ],
+   [
+    "déplacer",
+    "verplaatsen"
+   ],
+   [
+    "lancer",
+    "werpen, gooien, lanceren"
+   ],
+   [
+    "placer",
+    "plaatsen"
+   ],
+   [
+    "acheter",
+    "kopen"
+   ],
+   [
+    "élever",
+    "opvoeden"
+   ],
+   [
+    "enlever",
+    "uitdoen, weghalen"
+   ],
+   [
+    "geler",
+    "vriezen"
+   ],
+   [
+    "lever",
+    "omhoog houden, tillen"
+   ],
+   [
+    "peser",
+    "wegen"
+   ],
+   [
+    "se lever",
+    "rechtstaan, opstaan"
+   ],
+   [
+    "se promener",
+    "wandelen"
+   ],
+   [
+    "répéter",
+    "herhalen"
+   ],
+   [
+    "compléter",
+    "vervolledigen, invullen"
+   ],
+   [
+    "espérer",
+    "hopen"
+   ],
+   [
+    "exagérer",
+    "overdrijven"
+   ],
+   [
+    "préférer",
+    "verkiezen"
+   ],
+   [
+    "jeter",
+    "gooien, werpen"
+   ],
+   [
+    "nettoyer",
+    "schoonmaken"
+   ],
+   [
+    "employer",
+    "gebruiken"
+   ],
+   [
+    "s'ennuyer",
+    "zich vervelen"
+   ],
+   [
+    "envoyer",
+    "(op)sturen, (ver)zenden"
+   ],
+   [
+    "payer",
+    "betalen"
+   ],
+   [
+    "appeler",
+    "roepen, noemen, bellen"
+   ],
+   [
+    "s'appeler",
+    "heten"
+   ],
+   [
+    "se rappeler",
+    "zich herinneren"
+   ]
+  ]
+ },
+ {
+  "id": "v14-ir-re",
+  "titel": "Infinitieven: -ir, -re en -oir",
+  "groep": "Toets 14/09 · infinitieven",
+  "bron": "blad 4-5 · EDG p. 30",
+  "extra": false,
+  "soort": "voc",
+  "items": [
+   [
+    "attendre",
+    "wachten (op)"
+   ],
+   [
+    "dépendre de",
+    "afhangen van"
+   ],
+   [
+    "descendre",
+    "naar beneden gaan, afdalen"
+   ],
+   [
+    "entendre",
+    "horen"
+   ],
+   [
+    "perdre",
+    "verliezen"
+   ],
+   [
+    "rendre",
+    "teruggeven, terugbrengen"
+   ],
+   [
+    "rendre visite à",
+    "bezoeken"
+   ],
+   [
+    "répondre",
+    "antwoorden, beantwoorden"
+   ],
+   [
+    "s'attendre à qqc",
+    "iets verwachten"
+   ],
+   [
+    "se détendre",
+    "zich ontspannen"
+   ],
+   [
+    "tendre",
+    "reiken, aanreiken"
+   ],
+   [
+    "conduire",
+    "besturen"
+   ],
+   [
+    "séduire qqn (à)",
+    "iemand verleiden (tot, om)"
+   ],
+   [
+    "introduire",
+    "invoeren"
+   ],
+   [
+    "recevoir",
+    "krijgen, ontvangen"
+   ],
+   [
+    "finir",
+    "beëindigen, afmaken"
+   ],
+   [
+    "agir",
+    "handelen"
+   ],
+   [
+    "choisir",
+    "kiezen"
+   ],
+   [
+    "grandir",
+    "groot worden"
+   ],
+   [
+    "grossir",
+    "verdikken"
+   ],
+   [
+    "investir",
+    "investeren"
+   ],
+   [
+    "maigrir",
+    "vermageren"
+   ],
+   [
+    "réagir",
+    "reageren"
+   ],
+   [
+    "réfléchir",
+    "nadenken"
+   ],
+   [
+    "remplir",
+    "invullen"
+   ],
+   [
+    "rougir",
+    "blozen"
+   ],
+   [
+    "dormir",
+    "slapen"
+   ],
+   [
+    "mentir",
+    "liegen"
+   ],
+   [
+    "partir",
+    "vertrekken"
+   ],
+   [
+    "sentir",
+    "voelen"
+   ],
+   [
+    "servir",
+    "aanbieden, serveren, opdienen"
+   ],
+   [
+    "sortir",
+    "naar buiten gaan"
+   ],
+   [
+    "ouvrir",
+    "openen"
+   ],
+   [
+    "couvrir",
+    "bedekken"
+   ],
+   [
+    "découvrir",
+    "ontdekken"
+   ],
+   [
+    "offrir",
+    "geven, aanbieden"
+   ],
+   [
+    "souffrir",
+    "lijden"
+   ]
+  ]
+ },
+ {
+  "id": "v14-onregelmatig",
+  "titel": "Infinitieven: onregelmatig",
+  "groep": "Toets 14/09 · infinitieven",
+  "bron": "blad 6 · EDG p. 41-44",
+  "extra": false,
+  "soort": "voc",
+  "items": [
+   [
+    "aller",
+    "gaan"
+   ],
+   [
+    "s'asseoir",
+    "gaan zitten"
+   ],
+   [
+    "avoir",
+    "hebben"
+   ],
+   [
+    "boire",
+    "drinken"
+   ],
+   [
+    "conduire",
+    "besturen"
+   ],
+   [
+    "séduire qqn (à)",
+    "iemand verleiden (tot, om)"
+   ],
+   [
+    "introduire",
+    "invoeren"
+   ],
+   [
+    "connaitre",
+    "kennen"
+   ],
+   [
+    "reconnaitre",
+    "herkennen"
+   ],
+   [
+    "apparaitre",
+    "verschijnen"
+   ],
+   [
+    "courir",
+    "lopen"
+   ],
+   [
+    "croire",
+    "geloven"
+   ],
+   [
+    "devoir",
+    "moeten"
+   ],
+   [
+    "dire",
+    "zeggen"
+   ],
+   [
+    "écrire",
+    "schrijven"
+   ],
+   [
+    "envoyer",
+    "zenden"
+   ],
+   [
+    "peindre",
+    "schilderen"
+   ],
+   [
+    "éteindre",
+    "doven"
+   ],
+   [
+    "être",
+    "zijn"
+   ],
+   [
+    "faire",
+    "doen, maken"
+   ],
+   [
+    "falloir – il faut",
+    "moeten"
+   ],
+   [
+    "lire",
+    "lezen"
+   ],
+   [
+    "mettre",
+    "plaatsen, leggen, aantrekken"
+   ],
+   [
+    "permettre",
+    "toelaten"
+   ],
+   [
+    "promettre",
+    "beloven"
+   ],
+   [
+    "transmettre",
+    "doorgeven"
+   ],
+   [
+    "mourir",
+    "sterven (enkel passé composé: je suis mort)"
+   ],
+   [
+    "naître",
+    "geboren worden (enkel passé composé: je suis né)"
+   ],
+   [
+    "ouvrir",
+    "openen"
+   ],
+   [
+    "offrir",
+    "aanbieden"
+   ],
+   [
+    "plaire à qqn",
+    "iemand behagen, bevallen"
+   ],
+   [
+    "pleuvoir – il pleut",
+    "regenen"
+   ],
+   [
+    "pouvoir",
+    "mogen, kunnen"
+   ],
+   [
+    "prendre",
+    "nemen"
+   ],
+   [
+    "apprendre",
+    "leren"
+   ],
+   [
+    "comprendre",
+    "begrijpen"
+   ],
+   [
+    "recevoir",
+    "krijgen, ontvangen"
+   ],
+   [
+    "rire",
+    "lachen"
+   ],
+   [
+    "savoir",
+    "weten"
+   ],
+   [
+    "venir",
+    "komen"
+   ],
+   [
+    "devenir",
+    "worden"
+   ],
+   [
+    "revenir",
+    "terugkomen"
+   ],
+   [
+    "se souvenir de qqc",
+    "zich iets herinneren"
+   ],
+   [
+    "tenir",
+    "(vol)(vast)houden"
+   ],
+   [
+    "vivre",
+    "leven"
+   ],
+   [
+    "suivre (qqn)",
+    "(iemand) volgen"
+   ],
+   [
+    "voir",
+    "zien"
+   ],
+   [
+    "vouloir",
+    "willen"
+   ]
+  ]
+ }
 ];
 
 var WERELDEN=[
   {id:"primair", naam:"Primair", onder:"Het volledige leerplan, 5e leerjaar tot 4de middelbaar", datum:""},
-  {id:"tijdelijk", naam:"Tijdelijk", onder:"Les parties du corps · Défi 1 — Mission 1 · p. 35-36",
-   datum:"Toets 11/09"}
+  {id:"tijdelijk", naam:"Tijdelijk", onder:"La révision des verbes · 4e année · blad 1 tot 6",
+   datum:"Toets 14/09"}
 ];
 /* Tijdelijke drempel op de primaire versie. De code staat niet leesbaar in het
    bestand, alleen een getal dat eruit berekend is — geen echt slot, wel een drempel. */
@@ -1515,11 +2207,12 @@ function wereldNu(){
 /* Vult SETS, ZINNEN en NIVEAUS met de stof van de actieve wereld. */
 function bouwWereld(){
   if(S.wereld==="tijdelijk"){
-    /* standaard alleen de woordenbank; elk extra blok zet je apart aan bij het tandwiel */
-    var blokken=BOEK.filter(function(h){return !h.extra||S.extras[h.id]});
+    /* standaard alleen de kern; elke extra groep zet je apart aan bij het tandwiel */
+    var blokken=BOEK.filter(function(h){return !h.extra||S.extras[h.chip]});
     SETS=blokken.map(function(h){
-      return {id:h.id, titel:h.titel, hoofdstuk:h.groep, sectie:"Woordenschat",
-              soort:"voc", items:h.items, bron:h.bron};
+      return {id:h.id, titel:h.titel, hoofdstuk:h.groep,
+              sectie:h.soort==="werkw"?"Grammatica":"Woordenschat",
+              soort:h.soort||"voc", items:h.items, bron:h.bron};
     });
     ZINNEN=[];
     BOEK.forEach(function(h){
@@ -1541,27 +2234,33 @@ function bouwWereld(){
     : "Frans · "+SETS.length+" thema's · B1";
   $("#btnBoek").classList.toggle("tijdelijk",S.wereld==="tijdelijk");
   $("#btnSlot").hidden=!S.ontgrendeld;
-  $("#extraSet").hidden=(S.wereld!=="tijdelijk");
-  if(S.wereld==="tijdelijk")tekenExtraChips();
+  var heeftExtra=BOEK.some(function(h){return h.extra});
+  $("#extraSet").hidden=(S.wereld!=="tijdelijk"||!heeftExtra);
+  if(S.wereld==="tijdelijk"&&heeftExtra)tekenExtraChips();
 }
 
-/* Eén chip per extra blok: aanklikken zet dat blok in de hele app aan of uit. */
+/* Eén chip per extra groep: aanklikken zet die groep in de hele app aan of uit. */
 function tekenExtraChips(){
   var box=$("#extraChips"); box.innerHTML="";
-  var kern=0;
-  BOEK.forEach(function(h){if(!h.extra)kern+=h.items.length});
-  BOEK.filter(function(h){return h.extra}).forEach(function(h){
-    var b=el("button","chip",h.titel+" ("+h.items.length+")");
+  var kern=0, namen=[], aantal={};
+  BOEK.forEach(function(h){
+    if(!h.extra){kern+=h.items.length; return}
+    var c=h.chip||h.titel;
+    if(namen.indexOf(c)<0){namen.push(c); aantal[c]=0}
+    aantal[c]+=h.items.length;
+  });
+  namen.forEach(function(c){
+    var b=el("button","chip",c+" ("+aantal[c]+")");
     b.type="button"; b.style.setProperty("--cc","var(--zin)");
-    b.setAttribute("aria-pressed",String(!!S.extras[h.id]));
+    b.setAttribute("aria-pressed",String(!!S.extras[c]));
     b.addEventListener("click",function(){
-      S.extras[h.id]=!S.extras[h.id]; S.sel=null; save();
+      S.extras[c]=!S.extras[c]; S.sel=null; save();
       bouwWereld(); tekenNiveaus(); werkSelbarBij(); zetModus(S.mode);
     });
     box.appendChild(b);
   });
-  $("#extraNote").textContent="De lichaamsdelen ("+kern+
-    " woorden) staan altijd aan. Wat je hier aanzet, komt overal terug: kaarten, parcours, toets en samenvatting.";
+  $("#extraNote").textContent="De "+kern+
+    " infinitieven staan altijd aan (test 1). Wat je hier aanzet, komt overal terug: kaarten, parcours, toets en samenvatting.";
 }
 function wisselWereld(id){
   if(S.wereld===id){$("#boek").hidden=true; return}
@@ -1596,12 +2295,14 @@ function tekenWerelden(){
         zin+=(h.zinnen?h.zinnen.length:0);
       });
       kaart.appendChild(el("div","bmeta",
-        kern+" woorden lichaamsdelen · "+zin+" zinnen"));
-      var aan=0;
-      BOEK.forEach(function(h){if(h.extra&&S.extras[h.id])aan+=h.items.length});
-      kaart.appendChild(el("div","bmeta", aan
-        ? "+ "+aan+" van de "+(alles-kern)+" extra woorden staan aan"
-        : "+ "+(alles-kern)+" extra woorden, aan te zetten bij het tandwiel"));
+        kern+" werkwoorden · "+zin+" zinnen"));
+      if(alles>kern){
+        var aan=0;
+        BOEK.forEach(function(h){if(h.extra&&S.extras[h.chip])aan+=h.items.length});
+        kaart.appendChild(el("div","bmeta", aan
+          ? "+ "+aan+" van de "+(alles-kern)+" extra items staan aan"
+          : "+ "+(alles-kern)+" extra items, aan te zetten bij het tandwiel"));
+      }
     } else {
       var woorden=0;
       DATA.sets.forEach(function(s){woorden+=s.items.length});
